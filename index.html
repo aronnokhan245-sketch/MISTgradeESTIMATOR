@@ -11,8 +11,7 @@
 
 <div class="app-card">
     <div class="header">
-        <h1>Final Mark Estimator</h1>
-        <h1>MIST</h1>
+        <h1>MISTgradeMETRIC</h1>
     </div>
 
     <div class="credit-toggle">
@@ -21,8 +20,8 @@
     </div>
 
     <div class="input-group">
-        <label>CT MARKS (Space to separate)</label>
-        <input type="text" id="ctMarks" placeholder="20 20 20">
+        <label>CT MARKS (Space separated)</label>
+        <input type="text" id="ctMarks" placeholder="e.g. 20 20 20">
     </div>
 
     <div class="grid-inputs">
@@ -46,6 +45,11 @@
 
     <div class="button-row">
         <button class="calc-btn" onclick="calculate()">Calculate Requirement</button>
+        <button class="reset-btn" onclick="resetForm()">Reset All</button>
+    </div>
+
+    <div class="progress-container" id="progBar" style="display:none;">
+        <div class="progress-fill" id="fill"></div>
     </div>
 
     <div id="displayResult"></div>

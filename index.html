@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grade Estimator(MIST)</title>
+    <title>Grade Estimator (MIST)</title>
     <link rel="stylesheet" href="style.css">
-    <meta name="google-site-verification" content="rE0QuFqVQxnnYyDD3_sfT4NTey4dGW_KxMuXdObJZ2Q" />
 </head>
 <body>
 
@@ -21,7 +20,7 @@
 
     <div class="input-group">
         <label>CT MARKS (Space separated)</label>
-        <input type="text" id="ctMarks" placeholder="e.g. 20 20 20">
+        <input type="text" id="ctMarks" placeholder="e.g. 18 15 19">
     </div>
 
     <div class="grid-inputs">
@@ -38,8 +37,18 @@
             <input type="number" id="performance" placeholder="Score">
         </div>
         <div class="input-group">
-            <label>TARGET %</label>
-            <input type="number" id="targetPerc" placeholder="80">
+            <label>TARGET GPA</label>
+            <select id="targetGPA" class="gpa-select">
+                <option value="80">4.00 (A+)</option>
+                <option value="75">3.75 (A)</option>
+                <option value="70">3.50 (A-)</option>
+                <option value="65">3.25 (B+)</option>
+                <option value="60">3.00 (B)</option>
+                <option value="55">2.75 (B-)</option>
+                <option value="50">2.50 (C+)</option>
+                <option value="45">2.25 (C)</option>
+                <option value="40">2.00 (D)</option>
+            </select>
         </div>
     </div>
 
@@ -61,11 +70,4 @@
 
 <script src="script.js"></script>
 </body>
-
 </html>
-
-
-
-
-
-

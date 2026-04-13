@@ -1,14 +1,13 @@
 let selectedCredit = 3;
-const inputs = ['ctMarks', 'midterm', 'attendance', 'performance', 'targetPerc'];
+const inputs = ['ctMarks', 'midterm', 'attendance', 'performance', 'targetGPA'];
 
-// 1. Persist data: Save to localStorage on input
+// Save/Load Logic
 inputs.forEach(id => {
     document.getElementById(id).addEventListener('input', () => {
         localStorage.setItem(id, document.getElementById(id).value);
     });
 });
 
-// 2. Load data: Restore from localStorage on page load
 window.onload = () => {
     inputs.forEach(id => {
         const savedValue = localStorage.getItem(id);
@@ -41,15 +40,12 @@ function calculate() {
     const ctString = document.getElementById('ctMarks').value;
     const ctArray = ctString.split(' ').filter(s => s !== '').map(Number);
     
-    // Logic for CT Validation
     if (ctArray.length < 2) {
         alert("Please enter at least 2 CT marks");
         return;
     }
 
-    // Check if any CT exceeds 20
-    const hasInvalidCT = ctArray.some(mark => mark > 20);
-    if (hasInvalidCT) {
+    if (ctArray.some(mark => mark > 20)) {
         resDiv.innerHTML = "❌ Error: CT marks cannot exceed 20!";
         resDiv.style.color = "#ff4d4d";
         return;
@@ -58,12 +54,13 @@ function calculate() {
     const mid = parseFloat(document.getElementById('midterm').value) || 0;
     const att = parseFloat(document.getElementById('attendance').value) || 0;
     const perf = parseFloat(document.getElementById('performance').value) || 0;
-    const target = parseFloat(document.getElementById('targetPerc').value) || 80;
+    
+    // The value of the select dropdown is the minimum percentage for that GPA
+    const target = parseFloat(document.getElementById('targetGPA').value);
 
     let maxMid = (selectedCredit === 2) ? 20 : 30;
     let maxAttPerf = (selectedCredit === 2) ? 10 : 15;
 
-    // Logic for Invalid Input (Max limits)
     if (mid > maxMid || att > maxAttPerf || perf > maxAttPerf) {
         resDiv.innerHTML = "❌ Error: Marks exceed maximum limit!";
         resDiv.style.color = "#ff4d4d";
@@ -72,37 +69,37 @@ function calculate() {
     
     resDiv.style.color = "#D4AF37"; 
 
-    // Sort and get Best Two
+    // MIST Logic: Best 2 CTs average (Weight 20%)
     ctArray.sort((a, b) => b - a);
     const bestTwoAvg = (ctArray[0] + ctArray[1]) / 2.0;
 
-    // Weight Calculations
+    // Weight Calculations (Total 40% before final)
     let midP = (selectedCredit === 2) ? (mid / 20) * 10 : (mid / 30) * 10;
     let attP = (selectedCredit === 2) ? (att / 10) * 5 : (att / 15) * 5;
     let perfP = (selectedCredit === 2) ? (perf / 10) * 5 : (perf / 15) * 5;
 
-    let currentTotal = bestTwoAvg + midP + attP + perfP;
-    let needed = target - currentTotal;
+    let currentTotal = bestTwoAvg + midP + attP + perfP; // This is out of 40
+    let needed = target - currentTotal; // Percentage points still needed
+    
+    // Final Exam is 60% of the total grade
     let maxFinal = (selectedCredit === 2) ? 120 : 180;
     let finalMark = (needed / 60) * maxFinal;
 
-    // Update Progress Bar (currentTotal is out of 40%)
-    const progBar = document.getElementById('progBar');
     const fill = document.getElementById('fill');
-    progBar.style.display = 'block';
-    fill.style.width = (currentTotal / 0.4) + "%";
+    document.getElementById('progBar').style.display = 'block';
+    fill.style.width = (currentTotal / 40 * 100) + "%";
 
     if (finalMark > maxFinal) {
-        resDiv.innerHTML = "Status: Impossible to reach target!";
+        resDiv.innerHTML = "Status: Target GPA unreachable!";
     } else {
         const result = Math.max(0, finalMark).toFixed(2);
-        resDiv.innerHTML = `Need: ${result} / ${maxFinal}`;
+        resDiv.innerHTML = `Need: ${result} / ${maxFinal} in Finals`;
     }
 }
 
 function resetForm() {
     inputs.forEach(id => {
-        document.getElementById(id).value = '';
+        document.getElementById(id).value = (id === 'targetGPA') ? '80' : '';
         localStorage.removeItem(id);
     });
     document.getElementById('displayResult').innerHTML = '';

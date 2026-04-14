@@ -62,7 +62,14 @@ input, .gpa-select {
     color: #fff;
     margin-bottom: 15px;
     box-sizing: border-box;
-    appearance: none; /* For cleaner select look */
+    appearance: none;
+}
+
+/* Added for the 3 CT inputs */
+.ct-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
 }
 
 .gpa-select {

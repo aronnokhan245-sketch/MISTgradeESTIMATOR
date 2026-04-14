@@ -1,73 +1,142 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grade Estimator (MIST)</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+body {
+    background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+}
 
-<div class="app-card">
-    <div class="header">
-        <h1>MIST MARK ESTIMATOR</h1>
-    </div>
+.app-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    padding: 30px;
+    border-radius: 25px;
+    width: 380px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+}
 
-    <div class="credit-toggle">
-        <button id="btn2" onclick="setCredit(2)">2.0 Credits</button>
-        <button id="btn3" class="active" onclick="setCredit(3)">3.0 Credits</button>
-    </div>
+h1 { color: #D4AF37; text-align: center; font-size: 22px; text-transform: uppercase; margin-bottom: 10px; }
 
-    <div class="input-group">
-        <label>CT MARKS (Space separated)</label>
-        <input type="text" id="ctMarks" placeholder="e.g. 20 20 20">
-    </div>
+.credit-toggle {
+    display: flex;
+    background: #111;
+    border-radius: 12px;
+    padding: 5px;
+    margin: 20px 0;
+    border: 1px solid #333;
+}
 
-    <div class="grid-inputs">
-        <div class="input-group">
-            <label id="midLabel">MID TERM (Max 30)</label>
-            <input type="number" id="midterm" placeholder="Score">
-        </div>
-        <div class="input-group">
-            <label id="attLabel">ATTENDANCE (Max 15)</label>
-            <input type="number" id="attendance" placeholder="Score">
-        </div>
-        <div class="input-group">
-            <label id="perfLabel">CLASS PERF. (Max 15)</label>
-            <input type="number" id="performance" placeholder="Score">
-        </div>
-        <div class="input-group">
-            <label>TARGET GPA</label>
-            <select id="targetGPA" class="gpa-select">
-                <option value="80">4.00 (A+)</option>
-                <option value="75">3.75 (A)</option>
-                <option value="70">3.50 (A-)</option>
-                <option value="65">3.25 (B+)</option>
-                <option value="60">3.00 (B)</option>
-                <option value="55">2.75 (B-)</option>
-                <option value="50">2.50 (C+)</option>
-                <option value="45">2.25 (C)</option>
-                <option value="40">2.00 (D)</option>
-            </select>
-        </div>
-    </div>
+.credit-toggle button {
+    flex: 1;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    background: transparent;
+    color: #888;
+    font-weight: bold;
+    cursor: pointer;
+}
 
-    <div class="button-row">
-        <button class="calc-btn" onclick="calculate()">Calculate Requirement</button>
-        <button class="reset-btn" onclick="resetForm()">Reset All</button>
-    </div>
+.credit-toggle button.active {
+    background: #D4AF37;
+    color: #000;
+}
 
-    <div class="progress-container" id="progBar" style="display:none;">
-        <div class="progress-fill" id="fill"></div>
-    </div>
+.input-group label {
+    display: block;
+    font-size: 10px;
+    color: #D4AF37;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
 
-    <div id="displayResult"></div>
+input, .gpa-select {
+    width: 100%;
+    border: 1px solid #333;
+    background: #0a0a0a;
+    padding: 12px;
+    border-radius: 12px;
+    color: #fff;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    appearance: none;
+}
 
-    <div class="footer-credit">
-        Made by Abir Anwar Khan (AE-17)
-    </div>
-</div>
+/* Added for the 3 CT inputs */
+.ct-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+}
 
-<script src="script.js"></script>
-</body>
-</html>
+.gpa-select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23D4AF37' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: calc(100% - 12px) center;
+}
+
+.grid-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.calc-btn {
+    width: 100%;
+    background: #D4AF37;
+    color: #000;
+    border: none;
+    padding: 15px;
+    border-radius: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.reset-btn {
+    width: 100%;
+    background: transparent;
+    color: #888;
+    border: 1px solid #333;
+    padding: 8px;
+    margin-top: 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.progress-container {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    margin: 15px 0;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #D4AF37, #f1c40f);
+    transition: width 0.5s ease;
+}
+
+#displayResult {
+    margin-top: 10px;
+    text-align: center;
+    color: #D4AF37;
+    font-weight: bold;
+}
+
+.footer-credit {
+    margin-top: 25px;
+    text-align: center;
+    font-size: 11px;
+    color: rgba(212, 175, 55, 0.6);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}

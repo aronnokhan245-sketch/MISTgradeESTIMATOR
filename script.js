@@ -1,17 +1,22 @@
 let selectedCredit = 3;
-const inputs = ['ctMarks', 'midterm', 'attendance', 'performance', 'targetGPA'];
+// Updated input IDs list
+const inputs = ['ct1', 'ct2', 'ct3', 'midterm', 'attendance', 'performance', 'targetGPA'];
 
 // Save/Load Logic
 inputs.forEach(id => {
-    document.getElementById(id).addEventListener('input', () => {
-        localStorage.setItem(id, document.getElementById(id).value);
-    });
+    const element = document.getElementById(id);
+    if (element) {
+        element.addEventListener('input', () => {
+            localStorage.setItem(id, element.value);
+        });
+    }
 });
 
 window.onload = () => {
     inputs.forEach(id => {
         const savedValue = localStorage.getItem(id);
-        if (savedValue) document.getElementById(id).value = savedValue;
+        const element = document.getElementById(id);
+        if (savedValue && element) element.value = savedValue;
     });
 };
 
@@ -37,8 +42,14 @@ function setCredit(val) {
 
 function calculate() {
     const resDiv = document.getElementById('displayResult');
-    const ctString = document.getElementById('ctMarks').value;
-    const ctArray = ctString.split(' ').filter(s => s !== '').map(Number);
+    
+    // Get values from the 3 CT boxes
+    const c1 = parseFloat(document.getElementById('ct1').value);
+    const c2 = parseFloat(document.getElementById('ct2').value);
+    const c3 = parseFloat(document.getElementById('ct3').value);
+    
+    // Create an array and filter out any non-numbers (empty fields)
+    let ctArray = [c1, c2, c3].filter(num => !isNaN(num));
     
     if (ctArray.length < 2) {
         alert("Please enter at least 2 CT marks");
@@ -54,8 +65,6 @@ function calculate() {
     const mid = parseFloat(document.getElementById('midterm').value) || 0;
     const att = parseFloat(document.getElementById('attendance').value) || 0;
     const perf = parseFloat(document.getElementById('performance').value) || 0;
-    
-    // The value of the select dropdown is the minimum percentage for that GPA
     const target = parseFloat(document.getElementById('targetGPA').value);
 
     let maxMid = (selectedCredit === 2) ? 20 : 30;
@@ -69,19 +78,18 @@ function calculate() {
     
     resDiv.style.color = "#D4AF37"; 
 
-    // MIST Logic: Best 2 CTs average (Weight 20%)
+    // Sort to find best two
     ctArray.sort((a, b) => b - a);
     const bestTwoAvg = (ctArray[0] + ctArray[1]) / 2.0;
 
-    // Weight Calculations (Total 40% before final)
+    // Weight Calculations
     let midP = (selectedCredit === 2) ? (mid / 20) * 10 : (mid / 30) * 10;
     let attP = (selectedCredit === 2) ? (att / 10) * 5 : (att / 15) * 5;
     let perfP = (selectedCredit === 2) ? (perf / 10) * 5 : (perf / 15) * 5;
 
-    let currentTotal = bestTwoAvg + midP + attP + perfP; // This is out of 40
-    let needed = target - currentTotal; // Percentage points still needed
+    let currentTotal = bestTwoAvg + midP + attP + perfP; 
+    let needed = target - currentTotal; 
     
-    // Final Exam is 60% of the total grade
     let maxFinal = (selectedCredit === 2) ? 120 : 180;
     let finalMark = (needed / 60) * maxFinal;
 
@@ -99,7 +107,10 @@ function calculate() {
 
 function resetForm() {
     inputs.forEach(id => {
-        document.getElementById(id).value = (id === 'targetGPA') ? '80' : '';
+        const element = document.getElementById(id);
+        if(element) {
+            element.value = (id === 'targetGPA') ? '80' : '';
+        }
         localStorage.removeItem(id);
     });
     document.getElementById('displayResult').innerHTML = '';

@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MIST GradeMetric</title>
     <style>
-        /* ALL STYLING INCLUDED HERE */
         body {
             background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
             min-height: 100vh;
@@ -80,7 +79,7 @@
             border: 2px solid #D4AF37; border-radius: 15px; text-align: center;
         }
 
-        #displayResult { color: #D4AF37; font-weight: bold; font-size: 18px; }
+        #displayResult { color: #D4AF37; font-weight: bold; font-size: 16px; }
 
         .footer-credit { margin-top: 25px; text-align: center; font-size: 11px; color: rgba(212, 175, 55, 0.6); text-transform: uppercase; }
 
@@ -133,13 +132,16 @@
     </div>
 
     <div id="cgpa-section" style="display: none;">
-        <div id="course-rows">
-            <div class="course-row">
-                <input type="number" step="0.01" class="c-credit" placeholder="Credit (e.g. 3.0)">
-                <input type="number" step="0.01" class="c-gp" placeholder="GP (e.g. 3.75)">
+        <div class="input-group">
+            <label>ENTER SEMESTER SUBJECTS</label>
+            <div id="course-rows">
+                <div class="course-row">
+                    <input type="number" step="0.01" class="c-credit" placeholder="Credit (0.75-3)">
+                    <input type="number" step="0.01" class="c-gp" placeholder="GP (e.g. 4.00)">
+                </div>
             </div>
+            <button class="add-row-btn" onclick="addRow()">+ Add Subject</button>
         </div>
-        <button class="add-row-btn" onclick="addRow()">+ Add Subject</button>
         <button class="calc-btn" onclick="calculateCGPA()">Calculate CGPA</button>
     </div>
 
@@ -153,7 +155,6 @@
 </div>
 
 <script>
-    /* ALL LOGIC INCLUDED HERE */
     let selectedCredit = 3;
 
     function switchTab(tab) {
@@ -175,12 +176,25 @@
     function calculateCGPA() {
         const credits = document.getElementsByClassName('c-credit');
         const gps = document.getElementsByClassName('c-gp');
+        const allowedCredits = [0.75, 1.5, 2.0, 3.0]; // Valid MIST credit values
+        
         let totalP = 0, totalC = 0;
+
         for (let i = 0; i < credits.length; i++) {
-            let c = parseFloat(credits[i].value), g = parseFloat(gps[i].value);
-            if (!isNaN(c) && !isNaN(g)) { totalP += (c * g); totalC += c; }
+            let c = parseFloat(credits[i].value);
+            let g = parseFloat(gps[i].value);
+
+            if (!isNaN(c) && !isNaN(g)) {
+                // Strict Credit Validation Check
+                if (!allowedCredits.includes(c)) {
+                    return showResult(`❌ Error: ${c} is not a valid MIST credit. Use 0.75, 1.5, 2, or 3.`, true);
+                }
+                totalP += (c * g);
+                totalC += c;
+            }
         }
-        if (totalC === 0) return alert("Please enter course details.");
+
+        if (totalC === 0) return alert("Enter credit and GP first!");
         showResult(`ESTIMATED GPA: ${(totalP / totalC).toFixed(2)}`);
     }
 
@@ -198,14 +212,14 @@
         const c2 = parseFloat(document.getElementById('ct2').value);
         const c3 = parseFloat(document.getElementById('ct3').value);
         let ctArray = [c1, c2, c3].filter(n => !isNaN(n)).sort((a,b) => b-a);
-        if (ctArray.length < 2) return alert("Please enter at least 2 CT marks.");
+        
+        if (ctArray.length < 2) return alert("Enter at least 2 CT marks.");
         
         const mid = parseFloat(document.getElementById('midterm').value) || 0;
         const att = parseFloat(document.getElementById('attendance').value) || 0;
         const perf = parseFloat(document.getElementById('performance').value) || 0;
         const target = parseFloat(document.getElementById('targetGPA').value);
         
-        // MIST Weighting Logic
         let bestTwoAvg = (ctArray[0] + ctArray[1]) / 2.0;
         let midP = (selectedCredit === 2) ? (mid / 20) * 10 : (mid / 30) * 10;
         let attP = (selectedCredit === 2) ? (att / 10) * 5 : (att / 15) * 5;
@@ -216,7 +230,7 @@
         let maxFinal = (selectedCredit === 2) ? 120 : 180;
         let finalMark = (needed / 60) * maxFinal;
 
-        if (finalMark > maxFinal) showResult("Target Unreachable!", true);
+        if (finalMark > maxFinal) showResult("STATUS: Target GPA Unreachable!", true);
         else showResult(`NEED: ${Math.max(0, finalMark).toFixed(2)} / ${maxFinal}`);
     }
 

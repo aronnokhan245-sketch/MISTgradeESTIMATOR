@@ -1,40 +1,91 @@
 let selectedCredit = 3;
 const inputs = ['ct1', 'ct2', 'ct3', 'midterm', 'attendance', 'performance', 'targetGPA'];
 
-inputs.forEach(id => {
-    const element = document.getElementById(id);
-    if (element) {
-        element.addEventListener('input', () => {
-            localStorage.setItem(id, element.value);
-        });
-    }
-});
+// Tab Switching Logic
+function switchTab(tab) {
+    const markSection = document.getElementById('mark-section');
+    const cgpaSection = document.getElementById('cgpa-section');
+    const tabMark = document.getElementById('tab-mark');
+    const tabCgpa = document.getElementById('tab-cgpa');
 
-window.onload = () => {
-    inputs.forEach(id => {
-        const savedValue = localStorage.getItem(id);
-        const element = document.getElementById(id);
-        if (savedValue && element) element.value = savedValue;
-    });
-};
+    if (tab === 'mark') {
+        markSection.style.display = 'block';
+        cgpaSection.style.display = 'none';
+        tabMark.classList.add('active');
+        tabCgpa.classList.remove('active');
+    } else {
+        markSection.style.display = 'none';
+        cgpaSection.style.display = 'block';
+        tabCgpa.classList.add('active');
+        tabMark.classList.remove('active');
+    }
+    resetForm();
+}
+
+// Add Course Row for CGPA
+function addRow() {
+    const container = document.getElementById('course-rows');
+    const div = document.createElement('div');
+    div.className = 'course-row';
+    div.innerHTML = `
+        <input type="number" step="0.01" class="c-credit" placeholder="Credit (e.g. 3.0)">
+        <input type="number" step="0.01" class="c-gp" placeholder="GP (e.g. 3.75)">
+    `;
+    container.appendChild(div);
+}
+
+// CGPA Calculation Logic
+function calculateCGPA() {
+    const credits = document.getElementsByClassName('c-credit');
+    const gps = document.getElementsByClassName('c-gp');
+    const resDiv = document.getElementById('displayResult');
+    const resBox = document.getElementById('resultBox');
+
+    let totalPoints = 0;
+    let totalCredits = 0;
+
+    for (let i = 0; i < credits.length; i++) {
+        const c = parseFloat(credits[i].value);
+        const g = parseFloat(gps[i].value);
+
+        if (!isNaN(c) && !isNaN(g)) {
+            totalPoints += (c * g);
+            totalCredits += c;
+        }
+    }
+
+    if (totalCredits === 0) {
+        alert("Please enter credit hours and grade points.");
+        return;
+    }
+
+    const finalCGPA = (totalPoints / totalCredits).toFixed(2);
+    resBox.style.display = "block";
+    resDiv.style.color = "#D4AF37";
+    resDiv.innerHTML = `ESTIMATED GPA: ${finalCGPA}`;
+}
+
+// --- Your Original Functions (Mark Estimator) ---
 
 function setCredit(val) {
     selectedCredit = val;
     document.getElementById('btn2').classList.toggle('active', val === 2);
     document.getElementById('btn3').classList.toggle('active', val === 3);
-
-    const midLabel = document.getElementById('midLabel');
-    const attLabel = document.getElementById('attLabel');
-    const perfLabel = document.getElementById('perfLabel');
+    
+    const labels = {
+        mid: document.getElementById('midLabel'),
+        att: document.getElementById('attLabel'),
+        perf: document.getElementById('perfLabel')
+    };
 
     if (val === 2) {
-        midLabel.innerText = "MID TERM (Max 20)";
-        attLabel.innerText = "ATTENDANCE (Max 10)";
-        perfLabel.innerText = "CLASS PERF. (Max 10)";
+        labels.mid.innerText = "MID TERM (Max 20)";
+        labels.att.innerText = "ATTENDANCE (Max 10)";
+        labels.perf.innerText = "CLASS PERF. (Max 10)";
     } else {
-        midLabel.innerText = "MID TERM (Max 30)";
-        attLabel.innerText = "ATTENDANCE (Max 15)";
-        perfLabel.innerText = "CLASS PERF. (Max 15)";
+        labels.mid.innerText = "MID TERM (Max 30)";
+        labels.att.innerText = "ATTENDANCE (Max 15)";
+        labels.perf.innerText = "CLASS PERF. (Max 15)";
     }
 }
 
@@ -53,13 +104,6 @@ function calculate() {
         return;
     }
 
-    if (ctArray.some(mark => mark > 20)) {
-        resBox.style.display = "block";
-        resDiv.innerHTML = "❌ CT marks cannot exceed 20!";
-        resDiv.style.color = "#ff4d4d";
-        return;
-    }
-
     const mid = parseFloat(document.getElementById('midterm').value) || 0;
     const att = parseFloat(document.getElementById('attendance').value) || 0;
     const perf = parseFloat(document.getElementById('performance').value) || 0;
@@ -68,9 +112,9 @@ function calculate() {
     let maxMid = (selectedCredit === 2) ? 20 : 30;
     let maxAttPerf = (selectedCredit === 2) ? 10 : 15;
 
-    if (mid > maxMid || att > maxAttPerf || perf > maxAttPerf) {
+    if (mid > maxMid || att > maxAttPerf || perf > maxAttPerf || ctArray.some(m => m > 20)) {
         resBox.style.display = "block";
-        resDiv.innerHTML = "❌ Marks exceed maximum limit!";
+        resDiv.innerHTML = "❌ Marks exceed limit!";
         resDiv.style.color = "#ff4d4d";
         return;
     }
@@ -91,10 +135,6 @@ function calculate() {
     let maxFinal = (selectedCredit === 2) ? 120 : 180;
     let finalMark = (needed / 60) * maxFinal;
 
-    const fill = document.getElementById('fill');
-    document.getElementById('progBar').style.display = 'block';
-    fill.style.width = (currentTotal / 40 * 100) + "%";
-
     if (finalMark > maxFinal) {
         resDiv.innerHTML = "STATUS: Target GPA Unreachable!";
     } else {
@@ -104,11 +144,18 @@ function calculate() {
 }
 
 function resetForm() {
+    // Clear mark inputs
     inputs.forEach(id => {
-        const element = document.getElementById(id);
-        if(element) element.value = (id === 'targetGPA') ? '80' : '';
-        localStorage.removeItem(id);
+        const el = document.getElementById(id);
+        if(el) el.value = (id === 'targetGPA') ? '80' : '';
     });
+    // Reset CGPA rows
+    document.getElementById('course-rows').innerHTML = `
+        <div class="course-row">
+            <input type="number" step="0.01" class="c-credit" placeholder="Credit (e.g. 3.0)">
+            <input type="number" step="0.01" class="c-gp" placeholder="GP (e.g. 3.75)">
+        </div>
+    `;
     document.getElementById('resultBox').style.display = 'none';
     document.getElementById('progBar').style.display = 'none';
 }

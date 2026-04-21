@@ -1,20 +1,45 @@
-/* Keep all your original CSS and add/modify these: */
+body {
+    background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    color: white;
+}
 
+.app-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    padding: 30px;
+    border-radius: 25px;
+    width: 380px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+}
+
+h1 { color: #D4AF37; text-align: center; font-size: 22px; text-transform: uppercase; margin-bottom: 20px; }
+
+/* Navigation Tabs */
 .tab-container {
     display: flex;
-    gap: 10px;
+    background: #111;
+    border-radius: 12px;
+    padding: 5px;
     margin-bottom: 20px;
+    border: 1px solid #333;
 }
 
 .tab-btn {
     flex: 1;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(212, 175, 55, 0.3);
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    background: transparent;
     color: #888;
-    border-radius: 12px;
-    cursor: pointer;
     font-weight: bold;
+    cursor: pointer;
     transition: 0.3s;
 }
 
@@ -23,28 +48,43 @@
     color: #000;
 }
 
-.course-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 10px;
+/* Form Styles */
+.input-group label { display: block; font-size: 10px; color: #D4AF37; font-weight: bold; margin-bottom: 5px; }
+input, .gpa-select {
+    width: 100%; border: 1px solid #333; background: #0a0a0a; padding: 12px;
+    border-radius: 12px; color: #fff; margin-bottom: 15px; box-sizing: border-box;
 }
+
+.ct-grid, .grid-inputs { display: grid; gap: 10px; }
+.ct-grid { grid-template-columns: 1fr 1fr 1fr; }
+.grid-inputs { grid-template-columns: 1fr 1fr; }
+
+.course-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
 
 .add-row-btn {
-    width: 100%;
-    background: transparent;
-    color: #D4AF37;
-    border: 1px dashed #D4AF37;
-    padding: 8px;
-    border-radius: 10px;
-    cursor: pointer;
-    margin-bottom: 15px;
-    font-size: 12px;
+    width: 100%; background: transparent; color: #D4AF37; border: 1px dashed #D4AF37;
+    padding: 8px; border-radius: 10px; cursor: pointer; margin-bottom: 15px; font-size: 11px;
 }
 
-/* Ensure consistent inputs */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+.calc-btn {
+    width: 100%; background: #D4AF37; color: #000; border: none; padding: 15px;
+    border-radius: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase;
 }
+
+.reset-btn {
+    width: 100%; background: transparent; color: #888; border: 1px solid #333;
+    padding: 8px; margin-top: 10px; border-radius: 12px; cursor: pointer; font-size: 11px;
+}
+
+.result-box {
+    margin-top: 20px; padding: 15px; background: rgba(212, 175, 55, 0.1);
+    border: 2px solid #D4AF37; border-radius: 15px; text-align: center;
+}
+
+.footer-credit { margin-top: 25px; text-align: center; font-size: 11px; color: rgba(212, 175, 55, 0.6); }
+
+.credit-toggle { display: flex; gap: 5px; margin-bottom: 15px; }
+.credit-toggle button {
+    flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #333; background: #111; color: #888; cursor: pointer;
+}
+.credit-toggle button.active { background: #D4AF37; color: #000; border-color: #D4AF37; }

@@ -190,7 +190,7 @@
 
             if (!isNaN(c) && !isNaN(g)) {
                 if (!allowedCredits.includes(c)) {
-                    return showResult(`❌ Error: ${c} is not a MIST credit (Use 0.75, 1.5, 2, or 3).`, true);
+                    return showResult(`❌ Error: Use 0.75, 1.5, 2, or 3`, true);
                 }
                 if (g < 0 || g > 4.0) {
                     return showResult(`❌ Error: GP must be between 0.00 and 4.00.`, true);

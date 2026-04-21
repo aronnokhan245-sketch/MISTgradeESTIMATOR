@@ -234,9 +234,9 @@
         const maxMid = selectedCredit === 2 ? 20 : 30;
         const maxOther = selectedCredit === 2 ? 10 : 15;
 
-        if (mid > maxMid) return showResult(`❌ Error: Midterm exceeds ${maxMid}!`, true);
-        if (att > maxOther) return showResult(`❌ Error: Attendance exceeds ${maxOther}!`, true);
-        if (perf > maxOther) return showResult(`❌ Error: Performance exceeds ${maxOther}!`, true);
+        if (mid > maxMid) return showResult(`Error: Midterm cannot exceed ${maxMid}!`, true);
+        if (att > maxOther) return showResult(`Error: Attendance cannot exceed ${maxOther}!`, true);
+        if (perf > maxOther) return showResult(`Error: Performance cannot exceed ${maxOther}!`, true);
 
         let bestTwoAvg = (ctArray[0] + ctArray[1]) / 2.0;
         let midP = (selectedCredit === 2) ? (mid / 20) * 10 : (mid / 30) * 10;

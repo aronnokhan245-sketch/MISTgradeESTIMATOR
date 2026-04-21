@@ -6,6 +6,11 @@
     <title>MIST GradeMetric</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --gold: #D4AF37;
+            --bg-dark: #0a0a0a;
+        }
+
         body {
             background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
             min-height: 100vh;
@@ -29,29 +34,54 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
 
-        h1 { color: #D4AF37; text-align: center; font-size: 24px; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; letter-spacing: 1px; }
+        h1 { color: var(--gold); text-align: center; font-size: 24px; font-weight: 800; text-transform: uppercase; margin-bottom: 25px; letter-spacing: 1px; }
 
-        .tab-container {
+        /* SLIDING PILL (SEGMENTED CONTROL) STYLING */
+        .segmented-control {
+            position: relative;
             display: flex;
             background: #111;
-            border-radius: 12px;
-            padding: 5px;
+            border-radius: 15px;
+            padding: 4px;
             margin-bottom: 20px;
             border: 1px solid #333;
+            z-index: 1;
         }
 
-        .tab-btn {
-            flex: 1; border: none; padding: 12px; border-radius: 10px;
-            background: transparent; color: #888; font-weight: 600; cursor: pointer; transition: 0.3s;
+        .segmented-control button {
+            flex: 1;
+            border: none;
+            padding: 12px;
+            background: transparent;
+            color: #888;
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 2;
             font-family: 'Inter', sans-serif;
+            transition: color 0.3s ease;
         }
 
-        .tab-btn.active { background: #D4AF37; color: #000; }
+        .segmented-control button.active { color: #000; }
 
-        .input-group label { display: block; font-size: 11px; color: #D4AF37; font-weight: 600; margin-bottom: 6px; }
+        /* The rolling "Circle/Pill" shape */
+        .glider {
+            position: absolute;
+            height: calc(100% - 8px);
+            width: calc(50% - 4px);
+            background: var(--gold);
+            border-radius: 12px;
+            z-index: 1;
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        /* Positions for the sliding gliders */
+        .tab-glider { transform: translateX(0); }
+        .credit-glider { transform: translateX(0); }
+
+        .input-group label { display: block; font-size: 11px; color: var(--gold); font-weight: 600; margin-bottom: 6px; }
         
         input, select {
-            width: 100%; border: 1px solid #333; background: #0a0a0a; padding: 12px;
+            width: 100%; border: 1px solid #333; background: var(--bg-dark); padding: 12px;
             border-radius: 12px; color: #fff; margin-bottom: 15px; box-sizing: border-box; 
             font-size: 14px; font-family: 'Inter', sans-serif;
         }
@@ -63,36 +93,30 @@
         .course-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
 
         .calc-btn {
-            width: 100%; background: #D4AF37; color: #000; border: none; padding: 15px;
+            width: 100%; background: var(--gold); color: #000; border: none; padding: 15px;
             border-radius: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase; 
             margin-top: 10px; font-family: 'Inter', sans-serif;
         }
 
         .add-row-btn {
-            width: 100%; background: transparent; color: #D4AF37; border: 1px dashed #D4AF37;
+            width: 100%; background: transparent; color: var(--gold); border: 1px dashed var(--gold);
             padding: 8px; border-radius: 10px; cursor: pointer; margin-bottom: 15px; font-size: 11px;
         }
 
         .reset-btn {
             width: 100%; background: transparent; color: #888; border: 1px solid #333;
-            padding: 8px; margin-top: 10px; border-radius: 12px; cursor: pointer; font-size: 11px;
+            padding: 8px; margin-top: 10px; border-radius: 12px; cursor: pointer; 
+            font-size: 11px; font-family: 'Inter', sans-serif;
         }
 
         .result-box {
             margin-top: 20px; padding: 15px; background: rgba(212, 175, 55, 0.1);
-            border: 2px solid #D4AF37; border-radius: 15px; text-align: center;
+            border: 2px solid var(--gold); border-radius: 15px; text-align: center;
         }
 
-        #displayResult { color: #D4AF37; font-weight: 600; font-size: 15px; }
+        #displayResult { color: var(--gold); font-weight: 600; font-size: 15px; }
 
         .footer-credit { margin-top: 25px; text-align: center; font-size: 10px; color: rgba(212, 175, 55, 0.5); text-transform: uppercase; }
-
-        .credit-toggle { display: flex; gap: 5px; margin-bottom: 15px; }
-        .credit-toggle button {
-            flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #333; background: #111; 
-            color: #888; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 600;
-        }
-        .credit-toggle button.active { background: #D4AF37; color: #000; border-color: #D4AF37; }
     </style>
 </head>
 <body>
@@ -100,16 +124,19 @@
 <div class="app-card">
     <h1>MIST GRADE METRIC</h1>
 
-    <div class="tab-container">
-        <button id="tab-mark" class="tab-btn active" onclick="switchTab('mark')">Mark Estimator</button>
-        <button id="tab-cgpa" class="tab-btn" onclick="switchTab('cgpa')">CGPA Calc</button>
+    <div class="segmented-control">
+        <div id="tabGlider" class="glider tab-glider"></div>
+        <button id="tab-mark" class="active" onclick="switchTab('mark')">Estimator</button>
+        <button id="tab-cgpa" onclick="switchTab('cgpa')">CGPA Calc</button>
     </div>
 
     <div id="mark-section">
-        <div class="credit-toggle">
+        <div class="segmented-control">
+            <div id="creditGlider" class="glider credit-glider" style="transform: translateX(100%);"></div>
             <button id="btn2" onclick="setCredit(2)">2.0 Credits</button>
             <button id="btn3" class="active" onclick="setCredit(3)">3.0 Credits</button>
         </div>
+
         <div class="input-group">
             <label>CT MARKS (Max 20)</label>
             <div class="ct-grid">
@@ -167,19 +194,43 @@
     let selectedCredit = 3;
 
     function switchTab(tab) {
-        document.getElementById('mark-section').style.display = (tab === 'mark') ? 'block' : 'none';
-        document.getElementById('cgpa-section').style.display = (tab === 'cgpa') ? 'block' : 'none';
-        document.getElementById('tab-mark').classList.toggle('active', tab === 'mark');
-        document.getElementById('tab-cgpa').classList.toggle('active', tab === 'cgpa');
+        const markSec = document.getElementById('mark-section');
+        const cgpaSec = document.getElementById('cgpa-section');
+        const glider = document.getElementById('tabGlider');
+        
+        if (tab === 'mark') {
+            markSec.style.display = 'block';
+            cgpaSec.style.display = 'none';
+            glider.style.transform = 'translateX(0)';
+            document.getElementById('tab-mark').classList.add('active');
+            document.getElementById('tab-cgpa').classList.remove('active');
+        } else {
+            markSec.style.display = 'none';
+            cgpaSec.style.display = 'block';
+            glider.style.transform = 'translateX(100%)';
+            document.getElementById('tab-cgpa').classList.add('active');
+            document.getElementById('tab-mark').classList.remove('active');
+        }
         document.getElementById('resultBox').style.display = "none";
     }
 
-    function addRow() {
-        const container = document.getElementById('course-rows');
-        const div = document.createElement('div');
-        div.className = 'course-row';
-        div.innerHTML = `<input type="number" step="0.01" class="c-credit" placeholder="Credit"><input type="number" step="0.01" class="c-gp" placeholder="GP">`;
-        container.appendChild(div);
+    function setCredit(val) {
+        selectedCredit = val;
+        const glider = document.getElementById('creditGlider');
+        
+        if (val === 2) {
+            glider.style.transform = 'translateX(0)';
+            document.getElementById('btn2').classList.add('active');
+            document.getElementById('btn3').classList.remove('active');
+        } else {
+            glider.style.transform = 'translateX(100%)';
+            document.getElementById('btn3').classList.add('active');
+            document.getElementById('btn2').classList.remove('active');
+        }
+
+        document.getElementById('midLabel').innerText = `MID TERM (Max ${val === 2 ? 20 : 30})`;
+        document.getElementById('attLabel').innerText = `ATTENDANCE (Max ${val === 2 ? 10 : 15})`;
+        document.getElementById('perfLabel').innerText = `CLASS PERF. (Max ${val === 2 ? 10 : 15})`;
     }
 
     function calculateCGPA() {
@@ -192,22 +243,13 @@
             let c = parseFloat(credits[i].value);
             let g = parseFloat(gps[i].value);
             if (!isNaN(c) && !isNaN(g)) {
-                if (!allowedCredits.includes(c)) return showResult(`Error: Use 0.75, 1.5, 2 or 3 credits.`, true);
-                if (g < 0 || g > 4.0) return showResult(`Error: GP must be between (0.0-4.0)`, true);
+                if (!allowedCredits.includes(c)) return showResult(`❌ Error: ${c} is not a valid credit.`, true);
+                if (g < 0 || g > 4.0) return showResult(`❌ Error: GP must be 0.0-4.0.`, true);
                 totalP += (c * g); totalC += c;
             }
         }
         if (totalC === 0) return alert("Enter values!");
         showResult(`ESTIMATED GPA: ${(totalP / totalC).toFixed(2)}`);
-    }
-
-    function setCredit(val) {
-        selectedCredit = val;
-        document.getElementById('btn2').className = (val === 2) ? 'active' : '';
-        document.getElementById('btn3').className = (val === 3) ? 'active' : '';
-        document.getElementById('midLabel').innerText = `MID TERM (Max ${val === 2 ? 20 : 30})`;
-        document.getElementById('attLabel').innerText = `ATTENDANCE (Max ${val === 2 ? 10 : 15})`;
-        document.getElementById('perfLabel').innerText = `CLASS PERF. (Max ${val === 2 ? 10 : 15})`;
     }
 
     function calculateMark() {
@@ -217,9 +259,8 @@
             parseFloat(document.getElementById('ct3').value)
         ];
         
-        // Error Handling for CT
         for(let val of ctVal) {
-            if (val > 20) return showResult("Error: CT marks cannot exceed 20!", true);
+            if (val > 20) return showResult("❌ Error: CT marks cannot exceed 20!", true);
         }
 
         let ctArray = ctVal.filter(n => !isNaN(n)).sort((a,b) => b-a);
@@ -230,13 +271,12 @@
         const perf = parseFloat(document.getElementById('performance').value) || 0;
         const target = parseFloat(document.getElementById('targetGPA').value);
 
-        // Error Handling for Mid, Att, Perf based on credits
         const maxMid = selectedCredit === 2 ? 20 : 30;
         const maxOther = selectedCredit === 2 ? 10 : 15;
 
-        if (mid > maxMid) return showResult(`Error: Midterm cannot exceed ${maxMid}!`, true);
-        if (att > maxOther) return showResult(`Error: Attendance cannot exceed ${maxOther}!`, true);
-        if (perf > maxOther) return showResult(`Error: Performance cannot exceed ${maxOther}!`, true);
+        if (mid > maxMid) return showResult(`❌ Error: Midterm exceeds ${maxMid}!`, true);
+        if (att > maxOther) return showResult(`❌ Error: Attendance exceeds ${maxOther}!`, true);
+        if (perf > maxOther) return showResult(`❌ Error: Performance exceeds ${maxOther}!`, true);
 
         let bestTwoAvg = (ctArray[0] + ctArray[1]) / 2.0;
         let midP = (selectedCredit === 2) ? (mid / 20) * 10 : (mid / 30) * 10;
@@ -252,11 +292,19 @@
         else showResult(`NEED: ${Math.max(0, finalMark).toFixed(2)} / ${maxFinal}`);
     }
 
+    function addRow() {
+        const container = document.getElementById('course-rows');
+        const div = document.createElement('div');
+        div.className = 'course-row';
+        div.innerHTML = `<input type="number" step="0.01" class="c-credit" placeholder="Credit"><input type="number" step="0.01" class="c-gp" placeholder="GP">`;
+        container.appendChild(div);
+    }
+
     function showResult(msg, isError = false) {
         document.getElementById('resultBox').style.display = "block";
         const display = document.getElementById('displayResult');
         display.innerHTML = msg;
-        display.style.color = isError ? "#ff4d4d" : "#D4AF37";
+        display.style.color = isError ? "#ff4d4d" : var(--gold);
     }
 
     function resetForm() {
@@ -265,6 +313,7 @@
             <div class="course-row"><input type="number" step="0.01" class="c-credit" placeholder="Credit"><input type="number" step="0.01" class="c-gp" placeholder="GP"></div>
         `;
         document.getElementById('resultBox').style.display = "none";
+        setCredit(3); // Default back to 3.0
         switchTab('mark');
     }
 </script>

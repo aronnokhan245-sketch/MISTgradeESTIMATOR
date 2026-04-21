@@ -9,7 +9,8 @@
         :root {
             --gold: #D4AF37;
             --bg-dark: #0a0a0a;
-            --transition: 0.45s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            /* Slower transition (0.6s) with a smooth bounce effect */
+            --rolling-speed: 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
         body {
@@ -37,52 +38,52 @@
 
         h1 { color: var(--gold); text-align: center; font-size: 24px; font-weight: 800; text-transform: uppercase; margin-bottom: 25px; letter-spacing: 1px; }
 
-        /* THE SLIDING SEGMENTED CONTROL */
-        .selector-container {
+        /* THE TRACK (Where the circle rolls) */
+        .selector-track {
             position: relative;
             display: flex;
             background: #111;
-            border-radius: 50px; /* Makes it a pill shape */
-            padding: 4px;
+            border-radius: 50px;
+            padding: 5px;
             margin-bottom: 20px;
             border: 1px solid #333;
-            height: 45px;
+            height: 48px;
             align-items: center;
-            isolation: isolate; /* Keeps the glider behind text */
+            isolation: isolate; 
         }
 
-        .selector-container button {
+        .selector-track button {
             flex: 1;
             height: 100%;
             border: none;
             background: none;
-            color: #888;
-            font-weight: 600;
+            color: #777;
+            font-weight: 700;
             cursor: pointer;
             z-index: 3;
             font-family: 'Inter', sans-serif;
-            transition: color 0.3s ease;
+            transition: color 0.4s ease;
             font-size: 13px;
         }
 
-        .selector-container button.active {
-            color: #000; /* Text turns black when circle is behind it */
+        .selector-track button.active {
+            color: #000; /* Text turns dark when the gold circle is underneath */
         }
 
-        /* THE ROLLING CIRCLE/PILL */
-        .glider {
+        /* THE ROLLING CIRCLE */
+        .rolling-glider {
             position: absolute;
-            height: calc(100% - 8px);
-            width: calc(50% - 4px);
+            height: calc(100% - 10px);
+            width: calc(50% - 5px);
             background: var(--gold);
-            border-radius: 40px; /* Circle shape */
+            border-radius: 40px; 
             z-index: 1;
-            left: 4px;
-            transition: transform var(--transition);
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+            left: 5px;
+            transition: transform var(--rolling-speed);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5); /* Glow effect */
         }
 
-        /* Input Styling */
+        /* Logic for sections */
         .input-group label { display: block; font-size: 11px; color: var(--gold); font-weight: 600; margin-bottom: 6px; }
         
         input, select {
@@ -103,14 +104,10 @@
             margin-top: 10px; font-family: 'Inter', sans-serif;
         }
 
-        .add-row-btn {
-            width: 100%; background: transparent; color: var(--gold); border: 1px dashed var(--gold);
-            padding: 8px; border-radius: 10px; cursor: pointer; margin-bottom: 15px; font-size: 11px;
-        }
-
         .reset-btn {
             width: 100%; background: transparent; color: #888; border: 1px solid #333;
             padding: 8px; margin-top: 10px; border-radius: 12px; cursor: pointer; font-size: 11px;
+            font-family: 'Inter', sans-serif;
         }
 
         .result-box {
@@ -120,7 +117,7 @@
 
         #displayResult { color: var(--gold); font-weight: 600; font-size: 15px; }
 
-        .footer-credit { margin-top: 25px; text-align: center; font-size: 10px; color: rgba(212, 175, 55, 0.5); text-transform: uppercase; }
+        .footer-credit { margin-top: 25px; text-align: center; font-size: 10px; color: rgba(212, 175, 55, 0.4); text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -128,15 +125,15 @@
 <div class="app-card">
     <h1>MIST GRADE METRIC</h1>
 
-    <div class="selector-container">
-        <div id="tabGlider" class="glider"></div>
+    <div class="selector-track">
+        <div id="tabGlider" class="rolling-glider"></div>
         <button id="tab-mark" class="active" onclick="switchTab('mark')">Estimator</button>
         <button id="tab-cgpa" onclick="switchTab('cgpa')">CGPA Calc</button>
     </div>
 
     <div id="mark-section">
-        <div class="selector-container">
-            <div id="creditGlider" class="glider" style="transform: translateX(100%);"></div>
+        <div class="selector-track">
+            <div id="creditGlider" class="rolling-glider" style="transform: translateX(100%);"></div>
             <button id="btn2" onclick="setCredit(2)">2.0 Credits</button>
             <button id="btn3" class="active" onclick="setCredit(3)">3.0 Credits</button>
         </div>
@@ -180,7 +177,7 @@
                     <input type="number" step="0.01" class="c-gp" placeholder="GP (0.0-4.0)">
                 </div>
             </div>
-            <button class="add-row-btn" onclick="addRow()">+ Add Subject</button>
+            <button style="width:100%; background:transparent; color:var(--gold); border:1px dashed var(--gold); padding:8px; border-radius:10px; cursor:pointer; margin-bottom:15px; font-size:11px;" onclick="addRow()">+ Add Subject</button>
         </div>
         <button class="calc-btn" onclick="calculateCGPA()">Calculate CGPA</button>
     </div>
@@ -226,26 +223,6 @@
         document.getElementById('perfLabel').innerText = `CLASS PERF. (Max ${isTwo ? 10 : 15})`;
     }
 
-    // Logic Functions
-    function calculateCGPA() {
-        const credits = document.getElementsByClassName('c-credit');
-        const gps = document.getElementsByClassName('c-gp');
-        const allowed = [0.75, 1.5, 2.0, 3.0];
-        let totalP = 0, totalC = 0;
-
-        for (let i = 0; i < credits.length; i++) {
-            let c = parseFloat(credits[i].value);
-            let g = parseFloat(gps[i].value);
-            if (!isNaN(c) && !isNaN(g)) {
-                if (!allowed.includes(c)) return showResult(`❌ Error: ${c} is not a valid credit.`, true);
-                if (g < 0 || g > 4.0) return showResult(`❌ Error: GP must be 0.0-4.0.`, true);
-                totalP += (c * g); totalC += c;
-            }
-        }
-        if (totalC === 0) return alert("Enter values!");
-        showResult(`ESTIMATED GPA: ${(totalP / totalC).toFixed(2)}`);
-    }
-
     function calculateMark() {
         const ctVal = [
             parseFloat(document.getElementById('ct1').value),
@@ -266,7 +243,7 @@
         const maxMid = (selectedCredit === 2) ? 20 : 30;
         const maxOther = (selectedCredit === 2) ? 10 : 15;
 
-        if (mid > maxMid || att > maxOther || perf > maxOther) return showResult(`❌ Error: Marks exceed limits!`, true);
+        if (mid > maxMid || att > maxOther || perf > maxOther) return showResult(`❌ Error: Input exceeds limits!`, true);
 
         let bestTwoAvg = (ctArray[0] + ctArray[1]) / 2.0;
         let midP = (mid / maxMid) * 10;
@@ -282,6 +259,25 @@
         else showResult(`NEED: ${Math.max(0, finalMark).toFixed(2)} / ${maxFinal}`);
     }
 
+    function calculateCGPA() {
+        const credits = document.getElementsByClassName('c-credit');
+        const gps = document.getElementsByClassName('c-gp');
+        const allowed = [0.75, 1.5, 2.0, 3.0];
+        let totalP = 0, totalC = 0;
+
+        for (let i = 0; i < credits.length; i++) {
+            let c = parseFloat(credits[i].value);
+            let g = parseFloat(gps[i].value);
+            if (!isNaN(c) && !isNaN(g)) {
+                if (!allowed.includes(c)) return showResult(`❌ Error: ${c} is invalid credit.`, true);
+                if (g < 0 || g > 4.0) return showResult(`❌ Error: GP must be 0-4.`, true);
+                totalP += (c * g); totalC += c;
+            }
+        }
+        if (totalC === 0) return alert("Enter values!");
+        showResult(`ESTIMATED GPA: ${(totalP / totalC).toFixed(2)}`);
+    }
+
     function addRow() {
         const div = document.createElement('div');
         div.className = 'course-row';
@@ -290,10 +286,11 @@
     }
 
     function showResult(msg, isError = false) {
-        document.getElementById('resultBox').style.display = "block";
-        const display = document.getElementById('displayResult');
-        display.innerHTML = msg;
-        display.style.color = isError ? "#ff4d4d" : "#D4AF37";
+        const rb = document.getElementById('resultBox');
+        const dr = document.getElementById('displayResult');
+        rb.style.display = "block";
+        dr.innerHTML = msg;
+        dr.style.color = isError ? "#ff4d4d" : "var(--gold)";
     }
 
     function resetForm() {

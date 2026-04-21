@@ -9,6 +9,7 @@
         :root {
             --gold: #D4AF37;
             --bg-dark: #0a0a0a;
+            --transition: 0.45s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
         body {
@@ -36,48 +37,52 @@
 
         h1 { color: var(--gold); text-align: center; font-size: 24px; font-weight: 800; text-transform: uppercase; margin-bottom: 25px; letter-spacing: 1px; }
 
-        /* SLIDING PILL (SEGMENTED CONTROL) STYLING */
-        .segmented-control {
+        /* THE SLIDING SEGMENTED CONTROL */
+        .selector-container {
             position: relative;
             display: flex;
             background: #111;
-            border-radius: 15px;
+            border-radius: 50px; /* Makes it a pill shape */
             padding: 4px;
             margin-bottom: 20px;
             border: 1px solid #333;
-            z-index: 1;
+            height: 45px;
+            align-items: center;
+            isolation: isolate; /* Keeps the glider behind text */
         }
 
-        .segmented-control button {
+        .selector-container button {
             flex: 1;
+            height: 100%;
             border: none;
-            padding: 12px;
-            background: transparent;
+            background: none;
             color: #888;
             font-weight: 600;
             cursor: pointer;
-            z-index: 2;
+            z-index: 3;
             font-family: 'Inter', sans-serif;
             transition: color 0.3s ease;
+            font-size: 13px;
         }
 
-        .segmented-control button.active { color: #000; }
+        .selector-container button.active {
+            color: #000; /* Text turns black when circle is behind it */
+        }
 
-        /* The rolling "Circle/Pill" shape */
+        /* THE ROLLING CIRCLE/PILL */
         .glider {
             position: absolute;
             height: calc(100% - 8px);
             width: calc(50% - 4px);
             background: var(--gold);
-            border-radius: 12px;
+            border-radius: 40px; /* Circle shape */
             z-index: 1;
-            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            left: 4px;
+            transition: transform var(--transition);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
         }
 
-        /* Positions for the sliding gliders */
-        .tab-glider { transform: translateX(0); }
-        .credit-glider { transform: translateX(0); }
-
+        /* Input Styling */
         .input-group label { display: block; font-size: 11px; color: var(--gold); font-weight: 600; margin-bottom: 6px; }
         
         input, select {
@@ -105,8 +110,7 @@
 
         .reset-btn {
             width: 100%; background: transparent; color: #888; border: 1px solid #333;
-            padding: 8px; margin-top: 10px; border-radius: 12px; cursor: pointer; 
-            font-size: 11px; font-family: 'Inter', sans-serif;
+            padding: 8px; margin-top: 10px; border-radius: 12px; cursor: pointer; font-size: 11px;
         }
 
         .result-box {
@@ -124,15 +128,15 @@
 <div class="app-card">
     <h1>MIST GRADE METRIC</h1>
 
-    <div class="segmented-control">
-        <div id="tabGlider" class="glider tab-glider"></div>
+    <div class="selector-container">
+        <div id="tabGlider" class="glider"></div>
         <button id="tab-mark" class="active" onclick="switchTab('mark')">Estimator</button>
         <button id="tab-cgpa" onclick="switchTab('cgpa')">CGPA Calc</button>
     </div>
 
     <div id="mark-section">
-        <div class="segmented-control">
-            <div id="creditGlider" class="glider credit-glider" style="transform: translateX(100%);"></div>
+        <div class="selector-container">
+            <div id="creditGlider" class="glider" style="transform: translateX(100%);"></div>
             <button id="btn2" onclick="setCredit(2)">2.0 Credits</button>
             <button id="btn3" class="active" onclick="setCredit(3)">3.0 Credits</button>
         </div>
@@ -194,56 +198,46 @@
     let selectedCredit = 3;
 
     function switchTab(tab) {
-        const markSec = document.getElementById('mark-section');
-        const cgpaSec = document.getElementById('cgpa-section');
         const glider = document.getElementById('tabGlider');
+        const isMark = (tab === 'mark');
         
-        if (tab === 'mark') {
-            markSec.style.display = 'block';
-            cgpaSec.style.display = 'none';
-            glider.style.transform = 'translateX(0)';
-            document.getElementById('tab-mark').classList.add('active');
-            document.getElementById('tab-cgpa').classList.remove('active');
-        } else {
-            markSec.style.display = 'none';
-            cgpaSec.style.display = 'block';
-            glider.style.transform = 'translateX(100%)';
-            document.getElementById('tab-cgpa').classList.add('active');
-            document.getElementById('tab-mark').classList.remove('active');
-        }
+        document.getElementById('mark-section').style.display = isMark ? 'block' : 'none';
+        document.getElementById('cgpa-section').style.display = isMark ? 'none' : 'block';
+        
+        glider.style.transform = isMark ? 'translateX(0)' : 'translateX(100%)';
+        
+        document.getElementById('tab-mark').classList.toggle('active', isMark);
+        document.getElementById('tab-cgpa').classList.toggle('active', !isMark);
         document.getElementById('resultBox').style.display = "none";
     }
 
     function setCredit(val) {
         selectedCredit = val;
         const glider = document.getElementById('creditGlider');
-        
-        if (val === 2) {
-            glider.style.transform = 'translateX(0)';
-            document.getElementById('btn2').classList.add('active');
-            document.getElementById('btn3').classList.remove('active');
-        } else {
-            glider.style.transform = 'translateX(100%)';
-            document.getElementById('btn3').classList.add('active');
-            document.getElementById('btn2').classList.remove('active');
-        }
+        const isTwo = (val === 2);
 
-        document.getElementById('midLabel').innerText = `MID TERM (Max ${val === 2 ? 20 : 30})`;
-        document.getElementById('attLabel').innerText = `ATTENDANCE (Max ${val === 2 ? 10 : 15})`;
-        document.getElementById('perfLabel').innerText = `CLASS PERF. (Max ${val === 2 ? 10 : 15})`;
+        glider.style.transform = isTwo ? 'translateX(0)' : 'translateX(100%)';
+        
+        document.getElementById('btn2').classList.toggle('active', isTwo);
+        document.getElementById('btn3').classList.toggle('active', !isTwo);
+
+        document.getElementById('midLabel').innerText = `MID TERM (Max ${isTwo ? 20 : 30})`;
+        document.getElementById('attLabel').innerText = `ATTENDANCE (Max ${isTwo ? 10 : 15})`;
+        document.getElementById('perfLabel').innerText = `CLASS PERF. (Max ${isTwo ? 10 : 15})`;
     }
 
+    // Logic Functions
     function calculateCGPA() {
         const credits = document.getElementsByClassName('c-credit');
         const gps = document.getElementsByClassName('c-gp');
-        const allowedCredits = [0.75, 1.5, 2.0, 3.0];
+        const allowed = [0.75, 1.5, 2.0, 3.0];
         let totalP = 0, totalC = 0;
 
         for (let i = 0; i < credits.length; i++) {
             let c = parseFloat(credits[i].value);
             let g = parseFloat(gps[i].value);
             if (!isNaN(c) && !isNaN(g)) {
-                if (!allowedCredits.includes(c)) return showResult(`❌ Error: ${c} is not a valid credit.`, true);
+                if (!allowed.includes(c)) return showResult(`❌ Error: ${c} is not a valid credit.`, true);
                 if (g < 0 || g > 4.0) return showResult(`❌ Error: GP must be 0.0-4.0.`, true);
                 totalP += (c * g); totalC += c;
             }
@@ -259,29 +253,25 @@
             parseFloat(document.getElementById('ct3').value)
         ];
         
-        for(let val of ctVal) {
-            if (val > 20) return showResult("❌ Error: CT marks cannot exceed 20!", true);
-        }
+        for(let val of ctVal) if (val > 20) return showResult("❌ Error: CT marks > 20!", true);
 
         let ctArray = ctVal.filter(n => !isNaN(n)).sort((a,b) => b-a);
-        if (ctArray.length < 2) return alert("Enter at least 2 CT marks.");
+        if (ctArray.length < 2) return alert("Enter 2 CT marks.");
         
         const mid = parseFloat(document.getElementById('midterm').value) || 0;
         const att = parseFloat(document.getElementById('attendance').value) || 0;
         const perf = parseFloat(document.getElementById('performance').value) || 0;
         const target = parseFloat(document.getElementById('targetGPA').value);
 
-        const maxMid = selectedCredit === 2 ? 20 : 30;
-        const maxOther = selectedCredit === 2 ? 10 : 15;
+        const maxMid = (selectedCredit === 2) ? 20 : 30;
+        const maxOther = (selectedCredit === 2) ? 10 : 15;
 
-        if (mid > maxMid) return showResult(`❌ Error: Midterm exceeds ${maxMid}!`, true);
-        if (att > maxOther) return showResult(`❌ Error: Attendance exceeds ${maxOther}!`, true);
-        if (perf > maxOther) return showResult(`❌ Error: Performance exceeds ${maxOther}!`, true);
+        if (mid > maxMid || att > maxOther || perf > maxOther) return showResult(`❌ Error: Marks exceed limits!`, true);
 
         let bestTwoAvg = (ctArray[0] + ctArray[1]) / 2.0;
-        let midP = (selectedCredit === 2) ? (mid / 20) * 10 : (mid / 30) * 10;
-        let attP = (selectedCredit === 2) ? (att / 10) * 5 : (att / 15) * 5;
-        let perfP = (selectedCredit === 2) ? (perf / 10) * 5 : (perf / 15) * 5;
+        let midP = (mid / maxMid) * 10;
+        let attP = (att / maxOther) * 5;
+        let perfP = (perf / maxOther) * 5;
 
         let currentTotal = bestTwoAvg + midP + attP + perfP;
         let needed = target - currentTotal;
@@ -293,27 +283,24 @@
     }
 
     function addRow() {
-        const container = document.getElementById('course-rows');
         const div = document.createElement('div');
         div.className = 'course-row';
         div.innerHTML = `<input type="number" step="0.01" class="c-credit" placeholder="Credit"><input type="number" step="0.01" class="c-gp" placeholder="GP">`;
-        container.appendChild(div);
+        document.getElementById('course-rows').appendChild(div);
     }
 
     function showResult(msg, isError = false) {
         document.getElementById('resultBox').style.display = "block";
         const display = document.getElementById('displayResult');
         display.innerHTML = msg;
-        display.style.color = isError ? "#ff4d4d" : var(--gold);
+        display.style.color = isError ? "#ff4d4d" : "#D4AF37";
     }
 
     function resetForm() {
         document.querySelectorAll('input').forEach(i => i.value = '');
-        document.getElementById('course-rows').innerHTML = `
-            <div class="course-row"><input type="number" step="0.01" class="c-credit" placeholder="Credit"><input type="number" step="0.01" class="c-gp" placeholder="GP"></div>
-        `;
+        document.getElementById('course-rows').innerHTML = `<div class="course-row"><input type="number" step="0.01" class="c-credit" placeholder="Credit"><input type="number" step="0.01" class="c-gp" placeholder="GP"></div>`;
         document.getElementById('resultBox').style.display = "none";
-        setCredit(3); // Default back to 3.0
+        setCredit(3);
         switchTab('mark');
     }
 </script>

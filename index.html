@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MIST GradeMetric</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         body {
             background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
@@ -11,7 +12,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Inter', sans-serif; /* Updated Font */
             margin: 0;
             color: white;
             padding: 20px;
@@ -28,7 +29,15 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
 
-        h1 { color: #D4AF37; text-align: center; font-size: 22px; text-transform: uppercase; margin-bottom: 20px; }
+        h1 { 
+            color: #D4AF37; 
+            text-align: center; 
+            font-size: 24px; 
+            letter-spacing: 1px; /* Improved readability */
+            font-weight: 800; 
+            text-transform: uppercase; 
+            margin-bottom: 20px; 
+        }
 
         .tab-container {
             display: flex;
@@ -41,16 +50,18 @@
 
         .tab-btn {
             flex: 1; border: none; padding: 12px; border-radius: 10px;
-            background: transparent; color: #888; font-weight: bold; cursor: pointer; transition: 0.3s;
+            background: transparent; color: #888; font-weight: 600; cursor: pointer; transition: 0.3s;
+            font-family: 'Inter', sans-serif;
         }
 
         .tab-btn.active { background: #D4AF37; color: #000; }
 
-        .input-group label { display: block; font-size: 10px; color: #D4AF37; font-weight: bold; margin-bottom: 5px; }
+        .input-group label { display: block; font-size: 11px; color: #D4AF37; font-weight: 600; margin-bottom: 6px; letter-spacing: 0.5px; }
         
         input, select {
             width: 100%; border: 1px solid #333; background: #0a0a0a; padding: 12px;
-            border-radius: 12px; color: #fff; margin-bottom: 15px; box-sizing: border-box; font-size: 14px;
+            border-radius: 12px; color: #fff; margin-bottom: 15px; box-sizing: border-box; 
+            font-size: 14px; font-family: 'Inter', sans-serif;
         }
 
         .ct-grid, .grid-inputs { display: grid; gap: 10px; }
@@ -61,17 +72,20 @@
 
         .calc-btn {
             width: 100%; background: #D4AF37; color: #000; border: none; padding: 15px;
-            border-radius: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase; margin-top: 10px;
+            border-radius: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase; 
+            margin-top: 10px; font-family: 'Inter', sans-serif; letter-spacing: 0.5px;
         }
 
         .add-row-btn {
             width: 100%; background: transparent; color: #D4AF37; border: 1px dashed #D4AF37;
-            padding: 8px; border-radius: 10px; cursor: pointer; margin-bottom: 15px; font-size: 11px;
+            padding: 8px; border-radius: 10px; cursor: pointer; margin-bottom: 15px; 
+            font-size: 11px; font-family: 'Inter', sans-serif;
         }
 
         .reset-btn {
             width: 100%; background: transparent; color: #888; border: 1px solid #333;
-            padding: 8px; margin-top: 10px; border-radius: 12px; cursor: pointer; font-size: 11px;
+            padding: 8px; margin-top: 10px; border-radius: 12px; cursor: pointer; 
+            font-size: 11px; font-family: 'Inter', sans-serif;
         }
 
         .result-box {
@@ -79,13 +93,14 @@
             border: 2px solid #D4AF37; border-radius: 15px; text-align: center;
         }
 
-        #displayResult { color: #D4AF37; font-weight: bold; font-size: 15px; }
+        #displayResult { color: #D4AF37; font-weight: 600; font-size: 16px; }
 
-        .footer-credit { margin-top: 25px; text-align: center; font-size: 11px; color: rgba(212, 175, 55, 0.6); text-transform: uppercase; }
+        .footer-credit { margin-top: 25px; text-align: center; font-size: 10px; color: rgba(212, 175, 55, 0.5); text-transform: uppercase; letter-spacing: 1px; }
 
         .credit-toggle { display: flex; gap: 5px; margin-bottom: 15px; }
         .credit-toggle button {
-            flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #333; background: #111; color: #888; cursor: pointer;
+            flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #333; background: #111; 
+            color: #888; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 600;
         }
         .credit-toggle button.active { background: #D4AF37; color: #000; border-color: #D4AF37; }
     </style>
@@ -106,7 +121,7 @@
             <button id="btn3" class="active" onclick="setCredit(3)">3.0 Credits</button>
         </div>
         <div class="input-group">
-            <label>CT MARKS (Max 20) (Best 2 taken)</label>
+            <label>CT MARKS (Max 20)</label>
             <div class="ct-grid">
                 <input type="number" id="ct1" placeholder="CT 1">
                 <input type="number" id="ct2" placeholder="CT 2">
@@ -183,24 +198,21 @@
         const allowedCredits = [0.75, 1.5, 2.0, 3.0];
         
         let totalP = 0, totalC = 0;
-
         for (let i = 0; i < credits.length; i++) {
             let c = parseFloat(credits[i].value);
             let g = parseFloat(gps[i].value);
-
             if (!isNaN(c) && !isNaN(g)) {
                 if (!allowedCredits.includes(c)) {
-                    return showResult(`❌ Error: Use 0.75, 1.5, 2, or 3`, true);
+                    return showResult(`Error: Use 0.75, 1.5, 2 or 3 credits`, true);
                 }
                 if (g < 0 || g > 4.0) {
-                    return showResult(`❌ Error: GP must be between 0.00 and 4.00.`, true);
+                    return showResult(`Error: GP must be between (0.0-4.0)`, true);
                 }
                 totalP += (c * g);
                 totalC += c;
             }
         }
-
-        if (totalC === 0) return alert("Please enter course values.");
+        if (totalC === 0) return alert("Enter values!");
         showResult(`ESTIMATED GPA: ${(totalP / totalC).toFixed(2)}`);
     }
 
@@ -218,8 +230,7 @@
         const c2 = parseFloat(document.getElementById('ct2').value);
         const c3 = parseFloat(document.getElementById('ct3').value);
         let ctArray = [c1, c2, c3].filter(n => !isNaN(n)).sort((a,b) => b-a);
-        
-        if (ctArray.length < 2) return alert("Enter at least 2 CT marks.");
+        if (ctArray.length < 2) return alert("Enter 2 CT marks.");
         
         const mid = parseFloat(document.getElementById('midterm').value) || 0;
         const att = parseFloat(document.getElementById('attendance').value) || 0;
@@ -236,7 +247,7 @@
         let maxFinal = (selectedCredit === 2) ? 120 : 180;
         let finalMark = (needed / 60) * maxFinal;
 
-        if (finalMark > maxFinal) showResult("Target GPA Unreachable!", true);
+        if (finalMark > maxFinal) showResult("Target Unreachable!", true);
         else showResult(`NEED: ${Math.max(0, finalMark).toFixed(2)} / ${maxFinal}`);
     }
 
@@ -248,21 +259,14 @@
     }
 
     function resetForm() {
-        // Clear all inputs
         document.querySelectorAll('input').forEach(i => i.value = '');
-        
-        // Reset to first subject row in CGPA section
         document.getElementById('course-rows').innerHTML = `
             <div class="course-row">
                 <input type="number" step="0.01" class="c-credit" placeholder="Credit">
-                <input type="number" step="0.01" class="c-gp" placeholder="GP (0.0-4.0)">
+                <input type="number" step="0.01" class="c-gp" placeholder="GP">
             </div>
         `;
-        
-        // Hide result box
         document.getElementById('resultBox').style.display = "none";
-        
-        // Return to Mark Estimator Tab
         switchTab('mark');
     }
 </script>

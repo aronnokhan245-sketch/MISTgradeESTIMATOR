@@ -4,14 +4,97 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MIST GradeMetric</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ALL STYLING INCLUDED HERE */
+        body {
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            color: white;
+            padding: 20px;
+        }
+
+        .app-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            padding: 30px;
+            border-radius: 25px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
+
+        h1 { color: #D4AF37; text-align: center; font-size: 22px; text-transform: uppercase; margin-bottom: 20px; }
+
+        .tab-container {
+            display: flex;
+            background: #111;
+            border-radius: 12px;
+            padding: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #333;
+        }
+
+        .tab-btn {
+            flex: 1; border: none; padding: 12px; border-radius: 10px;
+            background: transparent; color: #888; font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+
+        .tab-btn.active { background: #D4AF37; color: #000; }
+
+        .input-group label { display: block; font-size: 10px; color: #D4AF37; font-weight: bold; margin-bottom: 5px; }
+        
+        input, select {
+            width: 100%; border: 1px solid #333; background: #0a0a0a; padding: 12px;
+            border-radius: 12px; color: #fff; margin-bottom: 15px; box-sizing: border-box; font-size: 14px;
+        }
+
+        .ct-grid, .grid-inputs { display: grid; gap: 10px; }
+        .ct-grid { grid-template-columns: 1fr 1fr 1fr; }
+        .grid-inputs { grid-template-columns: 1fr 1fr; }
+
+        .course-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+
+        .calc-btn {
+            width: 100%; background: #D4AF37; color: #000; border: none; padding: 15px;
+            border-radius: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase; margin-top: 10px;
+        }
+
+        .add-row-btn {
+            width: 100%; background: transparent; color: #D4AF37; border: 1px dashed #D4AF37;
+            padding: 8px; border-radius: 10px; cursor: pointer; margin-bottom: 15px; font-size: 11px;
+        }
+
+        .reset-btn {
+            width: 100%; background: transparent; color: #888; border: 1px solid #333;
+            padding: 8px; margin-top: 10px; border-radius: 12px; cursor: pointer; font-size: 11px;
+        }
+
+        .result-box {
+            margin-top: 20px; padding: 15px; background: rgba(212, 175, 55, 0.1);
+            border: 2px solid #D4AF37; border-radius: 15px; text-align: center;
+        }
+
+        #displayResult { color: #D4AF37; font-weight: bold; font-size: 18px; }
+
+        .footer-credit { margin-top: 25px; text-align: center; font-size: 11px; color: rgba(212, 175, 55, 0.6); text-transform: uppercase; }
+
+        .credit-toggle { display: flex; gap: 5px; margin-bottom: 15px; }
+        .credit-toggle button {
+            flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #333; background: #111; color: #888; cursor: pointer;
+        }
+        .credit-toggle button.active { background: #D4AF37; color: #000; border-color: #D4AF37; }
+    </style>
 </head>
 <body>
 
 <div class="app-card">
-    <div class="header">
-        <h1>MIST GRADE METRIC</h1>
-    </div>
+    <h1>MIST GRADE METRIC</h1>
 
     <div class="tab-container">
         <button id="tab-mark" class="tab-btn active" onclick="switchTab('mark')">Mark Estimator</button>
@@ -23,7 +106,6 @@
             <button id="btn2" onclick="setCredit(2)">2.0 Credits</button>
             <button id="btn3" class="active" onclick="setCredit(3)">3.0 Credits</button>
         </div>
-
         <div class="input-group">
             <label>CT MARKS (Max 20) (Best 2 taken)</label>
             <div class="ct-grid">
@@ -32,32 +114,18 @@
                 <input type="number" id="ct3" placeholder="CT 3">
             </div>
         </div>
-
         <div class="grid-inputs">
-            <div class="input-group">
-                <label id="midLabel">MID TERM (Max 30)</label>
-                <input type="number" id="midterm" placeholder="Score">
-            </div>
-            <div class="input-group">
-                <label id="attLabel">ATTENDANCE (Max 15)</label>
-                <input type="number" id="attendance" placeholder="Score">
-            </div>
-            <div class="input-group">
-                <label id="perfLabel">CLASS PERF. (Max 15)</label>
-                <input type="number" id="performance" placeholder="Score">
-            </div>
+            <div class="input-group"><label id="midLabel">MID TERM (Max 30)</label><input type="number" id="midterm"></div>
+            <div class="input-group"><label id="attLabel">ATTENDANCE (Max 15)</label><input type="number" id="attendance"></div>
+            <div class="input-group"><label id="perfLabel">CLASS PERF. (Max 15)</label><input type="number" id="performance"></div>
             <div class="input-group">
                 <label>TARGET GPA</label>
-                <select id="targetGPA" class="gpa-select">
-                    <option value="80">4.00 (A+)</option>
-                    <option value="75">3.75 (A)</option>
-                    <option value="70">3.50 (A-)</option>
-                    <option value="65">3.25 (B+)</option>
-                    <option value="60">3.00 (B)</option>
-                    <option value="55">2.75 (B-)</option>
-                    <option value="50">2.50 (C+)</option>
-                    <option value="45">2.25 (C)</option>
-                    <option value="40">2.00 (D)</option>
+                <select id="targetGPA">
+                    <option value="80.0">4.00 (A+)</option>
+                    <option value="75.0">3.75 (A)</option>
+                    <option value="70.0">3.50 (A-)</option>
+                    <option value="65.0">3.25 (B+)</option>
+                    <option value="60.0">3.00 (B)</option>
                 </select>
             </div>
         </div>
@@ -65,34 +133,104 @@
     </div>
 
     <div id="cgpa-section" style="display: none;">
-        <div class="input-group">
-            <label>ENTER SEMESTER COURSES</label>
-            <div id="course-rows">
-                <div class="course-row">
-                    <input type="number" step="0.01" class="c-credit" placeholder="Credit (e.g. 3.0)">
-                    <input type="number" step="0.01" class="c-gp" placeholder="GP (e.g. 3.75)">
-                </div>
+        <div id="course-rows">
+            <div class="course-row">
+                <input type="number" step="0.01" class="c-credit" placeholder="Credit (e.g. 3.0)">
+                <input type="number" step="0.01" class="c-gp" placeholder="GP (e.g. 3.75)">
             </div>
-            <button class="add-row-btn" onclick="addRow()">+ Add Subject</button>
         </div>
+        <button class="add-row-btn" onclick="addRow()">+ Add Subject</button>
         <button class="calc-btn" onclick="calculateCGPA()">Calculate CGPA</button>
     </div>
 
     <button class="reset-btn" onclick="resetForm()">Reset All</button>
 
-    <div class="progress-container" id="progBar" style="display:none;">
-        <div class="progress-fill" id="fill"></div>
-    </div>
-
     <div id="resultBox" class="result-box" style="display:none;">
         <div id="displayResult"></div>
     </div>
 
-    <div class="footer-credit">
-        Made by Abir Anwar Khan (AE-17)
-    </div>
+    <div class="footer-credit">Made by Abir Anwar Khan (AE-17)</div>
 </div>
 
-<script src="script.js"></script>
+<script>
+    /* ALL LOGIC INCLUDED HERE */
+    let selectedCredit = 3;
+
+    function switchTab(tab) {
+        document.getElementById('mark-section').style.display = (tab === 'mark') ? 'block' : 'none';
+        document.getElementById('cgpa-section').style.display = (tab === 'cgpa') ? 'block' : 'none';
+        document.getElementById('tab-mark').classList.toggle('active', tab === 'mark');
+        document.getElementById('tab-cgpa').classList.toggle('active', tab === 'cgpa');
+        document.getElementById('resultBox').style.display = "none";
+    }
+
+    function addRow() {
+        const container = document.getElementById('course-rows');
+        const div = document.createElement('div');
+        div.className = 'course-row';
+        div.innerHTML = `<input type="number" step="0.01" class="c-credit" placeholder="Credit"><input type="number" step="0.01" class="c-gp" placeholder="GP">`;
+        container.appendChild(div);
+    }
+
+    function calculateCGPA() {
+        const credits = document.getElementsByClassName('c-credit');
+        const gps = document.getElementsByClassName('c-gp');
+        let totalP = 0, totalC = 0;
+        for (let i = 0; i < credits.length; i++) {
+            let c = parseFloat(credits[i].value), g = parseFloat(gps[i].value);
+            if (!isNaN(c) && !isNaN(g)) { totalP += (c * g); totalC += c; }
+        }
+        if (totalC === 0) return alert("Please enter course details.");
+        showResult(`ESTIMATED GPA: ${(totalP / totalC).toFixed(2)}`);
+    }
+
+    function setCredit(val) {
+        selectedCredit = val;
+        document.getElementById('btn2').className = (val === 2) ? 'active' : '';
+        document.getElementById('btn3').className = (val === 3) ? 'active' : '';
+        document.getElementById('midLabel').innerText = `MID TERM (Max ${val === 2 ? 20 : 30})`;
+        document.getElementById('attLabel').innerText = `ATTENDANCE (Max ${val === 2 ? 10 : 15})`;
+        document.getElementById('perfLabel').innerText = `CLASS PERF. (Max ${val === 2 ? 10 : 15})`;
+    }
+
+    function calculateMark() {
+        const c1 = parseFloat(document.getElementById('ct1').value);
+        const c2 = parseFloat(document.getElementById('ct2').value);
+        const c3 = parseFloat(document.getElementById('ct3').value);
+        let ctArray = [c1, c2, c3].filter(n => !isNaN(n)).sort((a,b) => b-a);
+        if (ctArray.length < 2) return alert("Please enter at least 2 CT marks.");
+        
+        const mid = parseFloat(document.getElementById('midterm').value) || 0;
+        const att = parseFloat(document.getElementById('attendance').value) || 0;
+        const perf = parseFloat(document.getElementById('performance').value) || 0;
+        const target = parseFloat(document.getElementById('targetGPA').value);
+        
+        // MIST Weighting Logic
+        let bestTwoAvg = (ctArray[0] + ctArray[1]) / 2.0;
+        let midP = (selectedCredit === 2) ? (mid / 20) * 10 : (mid / 30) * 10;
+        let attP = (selectedCredit === 2) ? (att / 10) * 5 : (att / 15) * 5;
+        let perfP = (selectedCredit === 2) ? (perf / 10) * 5 : (perf / 15) * 5;
+
+        let currentTotal = bestTwoAvg + midP + attP + perfP;
+        let needed = target - currentTotal;
+        let maxFinal = (selectedCredit === 2) ? 120 : 180;
+        let finalMark = (needed / 60) * maxFinal;
+
+        if (finalMark > maxFinal) showResult("Target Unreachable!", true);
+        else showResult(`NEED: ${Math.max(0, finalMark).toFixed(2)} / ${maxFinal}`);
+    }
+
+    function showResult(msg, isError = false) {
+        document.getElementById('resultBox').style.display = "block";
+        const display = document.getElementById('displayResult');
+        display.innerHTML = msg;
+        display.style.color = isError ? "#ff4d4d" : "#D4AF37";
+    }
+
+    function resetForm() {
+        document.getElementById('resultBox').style.display = "none";
+        document.querySelectorAll('input').forEach(i => i.value = '');
+    }
+</script>
 </body>
 </html>

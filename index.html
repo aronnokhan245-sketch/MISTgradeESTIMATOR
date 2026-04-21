@@ -79,7 +79,7 @@
             border: 2px solid #D4AF37; border-radius: 15px; text-align: center;
         }
 
-        #displayResult { color: #D4AF37; font-weight: bold; font-size: 16px; }
+        #displayResult { color: #D4AF37; font-weight: bold; font-size: 15px; }
 
         .footer-credit { margin-top: 25px; text-align: center; font-size: 11px; color: rgba(212, 175, 55, 0.6); text-transform: uppercase; }
 
@@ -133,11 +133,11 @@
 
     <div id="cgpa-section" style="display: none;">
         <div class="input-group">
-            <label>ENTER SEMESTER SUBJECTS</label>
+            <label>ENTER SUBJECT DETAILS</label>
             <div id="course-rows">
                 <div class="course-row">
-                    <input type="number" step="0.01" class="c-credit" placeholder="Credit (0.75-3)">
-                    <input type="number" step="0.01" class="c-gp" placeholder="GP (e.g. 4.00)">
+                    <input type="number" step="0.01" class="c-credit" placeholder="Credit">
+                    <input type="number" step="0.01" class="c-gp" placeholder="GP (0.0-4.0)">
                 </div>
             </div>
             <button class="add-row-btn" onclick="addRow()">+ Add Subject</button>
@@ -176,7 +176,7 @@
     function calculateCGPA() {
         const credits = document.getElementsByClassName('c-credit');
         const gps = document.getElementsByClassName('c-gp');
-        const allowedCredits = [0.75, 1.5, 2.0, 3.0]; // Valid MIST credit values
+        const allowedCredits = [0.75, 1.5, 2.0, 3.0];
         
         let totalP = 0, totalC = 0;
 
@@ -185,16 +185,20 @@
             let g = parseFloat(gps[i].value);
 
             if (!isNaN(c) && !isNaN(g)) {
-                // Strict Credit Validation Check
+                // Credit Validation
                 if (!allowedCredits.includes(c)) {
-                    return showResult(`❌ Error: ${c} is not a valid MIST credit. Use 0.75, 1.5, 2, or 3.`, true);
+                    return showResult(`❌ Error: ${c} is not a MIST credit (Use 0.75, 1.5, 2, or 3).`, true);
+                }
+                // Grade Point Validation
+                if (g < 0 || g > 4.0) {
+                    return showResult(`❌ Error: GP must be between 0.00 and 4.00.`, true);
                 }
                 totalP += (c * g);
                 totalC += c;
             }
         }
 
-        if (totalC === 0) return alert("Enter credit and GP first!");
+        if (totalC === 0) return alert("Please enter course values.");
         showResult(`ESTIMATED GPA: ${(totalP / totalC).toFixed(2)}`);
     }
 
@@ -230,7 +234,7 @@
         let maxFinal = (selectedCredit === 2) ? 120 : 180;
         let finalMark = (needed / 60) * maxFinal;
 
-        if (finalMark > maxFinal) showResult("STATUS: Target GPA Unreachable!", true);
+        if (finalMark > maxFinal) showResult("Target GPA Unreachable!", true);
         else showResult(`NEED: ${Math.max(0, finalMark).toFixed(2)} / ${maxFinal}`);
     }
 

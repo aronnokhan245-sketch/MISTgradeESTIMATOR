@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIST GradeMetric</title>
+    <title>MIST Grade Metric</title>
     <style>
         body {
             background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
@@ -187,7 +187,7 @@
             if (!isNaN(c) && !isNaN(g)) {
                 // Credit Validation
                 if (!allowedCredits.includes(c)) {
-                    return showResult(`❌ Error: ${c} is not a MIST credit (Use 0.75, 1.5, 2, or 3).`, true);
+                    return showResult(`❌ Error: Use 0.75, 1.5, 2, or 3.`, true);
                 }
                 // Grade Point Validation
                 if (g < 0 || g > 4.0) {

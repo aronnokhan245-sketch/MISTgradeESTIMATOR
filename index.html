@@ -24,15 +24,47 @@
             padding: 20px;
         }
 
+        /* LIGHT EFFECT CONTAINER */
         .app-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
+            background: #0a0a0a;
             padding: 30px;
             border-radius: 25px;
             width: 100%;
             max-width: 400px;
-            border: 1px solid rgba(212, 175, 55, 0.3);
+            position: relative;
             box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            z-index: 1;
+        }
+
+        /* THE MOVING LIGHT EFFECT */
+        .app-card::before {
+            content: '';
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: conic-gradient(transparent, transparent, transparent, var(--gold));
+            left: -25%;
+            top: -25%;
+            animation: rotateLight 7s linear infinite;
+            z-index: -2;
+        }
+
+        /* INTERNAL BORDER OVERLAY */
+        .app-card::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            background: #0d0d0d;
+            border-radius: 23px;
+            z-index: -1;
+        }
+
+        @keyframes rotateLight {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         h1 { 
@@ -89,15 +121,30 @@
             box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
         }
 
-        /* Inputs */
-        .input-group label { display: block; font-size: 11px; color: var(--gold); font-weight: 700; margin-bottom: 6px; text-transform: uppercase; }
-        
+        /* Inputs and Dropdown */
         input, select {
             width: 100%; border: 1px solid #333; background: var(--bg-dark); padding: 12px;
             border-radius: 12px; color: #fff; margin-bottom: 15px; box-sizing: border-box; 
             font-size: 14px; font-family: 'Open Sans', sans-serif;
+            transition: all 0.3s ease;
+            outline: none;
         }
 
+        /* INPUT FOCUS LIGHT EFFECT */
+        input:focus, select:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+            background: #0d0d0d !important; /* Force dark background */
+        }
+
+        /* FIXING DROPDOWN OPTIONS */
+        select option {
+            background-color: #0d0d0d;
+            color: #fff;
+        }
+
+        .input-group label { display: block; font-size: 11px; color: var(--gold); font-weight: 700; margin-bottom: 6px; text-transform: uppercase; }
+        
         .ct-grid, .grid-inputs { display: grid; gap: 10px; }
         .ct-grid { grid-template-columns: 1fr 1fr 1fr; }
         .grid-inputs { grid-template-columns: 1fr 1fr; }

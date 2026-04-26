@@ -283,7 +283,7 @@
 
     function calculateMark() {
         const cts = [parseFloat(document.getElementById('ct1').value), parseFloat(document.getElementById('ct2').value), parseFloat(document.getElementById('ct3').value)];
-        for(let v of cts) if (v > 20) return showResult("❌ Error: CT marks > 20!", true);
+        for(let v of cts) if (v > 20) return showResult("Error: CT marks exceeded 20!", true);
         let ctArray = cts.filter(n => !isNaN(n)).sort((a,b) => b-a);
         if (ctArray.length < 2) return alert("Enter 2 CT marks.");
         
@@ -294,7 +294,7 @@
 
         const maxM = selectedCredit === 2 ? 20 : 30;
         const maxO = selectedCredit === 2 ? 10 : 15;
-        if (mid > maxM || att > maxO || perf > maxO) return showResult(`❌ Error: Input exceeds limits!`, true);
+        if (mid > maxM || att > maxO || perf > maxO) return showResult(`Error: Input exceeds limits!`, true);
 
         let cur = ((ctArray[0]+ctArray[1])/2) + (mid/maxM*10) + (att/maxO*5) + (perf/maxO*5);
         let maxF = selectedCredit === 2 ? 120 : 180;
@@ -311,8 +311,8 @@
         for (let i = 0; i < credits.length; i++) {
             let c = parseFloat(credits[i].value), g = parseFloat(gps[i].value);
             if (!isNaN(c) && !isNaN(g)) {
-                if (![0.75, 1.5, 2.0, 3.0].includes(c)) return showResult(`❌ Error: Invalid Credit.`, true);
-                if (g < 0 || g > 4.0) return showResult(`❌ Error: GP 0-4.`, true);
+                if (![0.75, 1.5, 2.0, 3.0].includes(c)) return showResult(`Error: Invalid Credit.`, true);
+                if (g < 0 || g > 4.0) return showResult(`Error: Input between 0-4 GPA.`, true);
                 totalP += (c * g); totalC += c;
             }
         }

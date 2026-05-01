@@ -6,7 +6,6 @@
     <title>MIST GradeMetric</title>
     
     <!-- FAVICON (Browser Tab Icon) -->
-    <!-- Ensure your image is named 'logo.png' and is in the same folder on GitHub -->
     <link rel="icon" type="image/png" href="favicon.png">
 
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -29,7 +28,6 @@
             padding: 20px;
         }
 
-        /* LIGHT EFFECT CONTAINER */
         .app-card {
             background: #0a0a0a;
             padding: 30px;
@@ -44,7 +42,6 @@
             z-index: 1;
         }
 
-        /* THE MOVING LIGHT EFFECT */
         .app-card::before {
             content: '';
             position: absolute;
@@ -57,7 +54,6 @@
             z-index: -2;
         }
 
-        /* INTERNAL BORDER OVERLAY */
         .app-card::after {
             content: '';
             position: absolute;
@@ -72,7 +68,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Logo Styling */
         .brand-logo {
             width: 60px;
             height: auto;
@@ -92,7 +87,6 @@
             font-family: 'Open Sans', sans-serif;
         }
 
-        /* THE TRACK */
         .selector-track {
             position: relative;
             display: flex;
@@ -122,7 +116,6 @@
 
         .selector-track button.active { color: #000; }
 
-        /* THE ROLLING CIRCLE/PILL */
         .rolling-glider {
             position: absolute;
             height: calc(100% - 10px);
@@ -196,8 +189,8 @@
 <body>
 
 <div class="app-card">
-    <!-- Branding Logo in UI -->
-    <img src="logo.png" alt="" class="brand-logo" onerror="this.style.display='none'">
+    <!-- UI Logo -->
+    <img src="favicon.png" alt="" class="brand-logo" onerror="this.style.display='none'">
     
     <h1>MIST GRADE METRIC</h1>
 
@@ -207,7 +200,6 @@
         <button id="tab-cgpa" onclick="switchTab('cgpa')">CGPA Calc</button>
     </div>
 
-    <!-- Estimator Section -->
     <div id="mark-section">
         <div class="selector-track">
             <div id="creditGlider" class="rolling-glider" style="transform: translateX(100%);"></div>
@@ -245,7 +237,6 @@
         <button class="calc-btn" onclick="calculateMark()">Calculate Requirement</button>
     </div>
 
-    <!-- CGPA Section -->
     <div id="cgpa-section" style="display: none;">
         <div class="input-group">
             <label>ENTER SUBJECT DETAILS</label>
@@ -299,29 +290,21 @@
 
     function calculateMark() {
         const cts = [parseFloat(document.getElementById('ct1').value), parseFloat(document.getElementById('ct2').value), parseFloat(document.getElementById('ct3').value)];
-        
-        // Validation for negative values or exceeding max
         for(let v of cts) if (v < 0 || v > 20) return showResult("Error: Invalid CT marks!", true);
-        
         let ctArray = cts.filter(n => !isNaN(n)).sort((a,b) => b-a);
         if (ctArray.length < 2) return alert("Enter at least 2 CT marks.");
-        
         const mid = parseFloat(document.getElementById('midterm').value) || 0;
         const att = parseFloat(document.getElementById('attendance').value) || 0;
         const perf = parseFloat(document.getElementById('performance').value) || 0;
         const target = parseFloat(document.getElementById('targetGPA').value);
-
         const maxM = selectedCredit === 2 ? 20 : 30;
         const maxO = selectedCredit === 2 ? 10 : 15;
-
         if (mid < 0 || mid > maxM || att < 0 || att > maxO || perf < 0 || perf > maxO) {
             return showResult(`Error: Input exceeds limits!`, true);
         }
-
         let cur = ((ctArray[0]+ctArray[1])/2) + (mid/maxM*10) + (att/maxO*5) + (perf/maxO*5);
         let maxF = selectedCredit === 2 ? 120 : 180;
         let final = ((target - cur) / 60) * maxF;
-
         if (final > maxF) showResult("Target Unreachable!", true);
         else showResult(`NEED: ${Math.max(0, final).toFixed(2)} / ${maxF}`);
     }

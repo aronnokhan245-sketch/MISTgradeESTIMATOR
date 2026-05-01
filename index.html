@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MIST GradeMetric</title>
+    
+    <!-- FAVICON (Browser Tab Icon) -->
+    <!-- Ensure your image is named 'logo.png' and is in the same folder on GitHub -->
+    <link rel="icon" type="image/png" href="logo.png">
+
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/png" href="favicon.png">
     <style>
         :root {
             --gold: #D4AF37;
@@ -68,6 +72,15 @@
             to { transform: rotate(360deg); }
         }
 
+        /* Logo Styling */
+        .brand-logo {
+            width: 60px;
+            height: auto;
+            margin: 0 auto 10px auto;
+            display: block;
+            z-index: 5;
+        }
+
         h1 { 
             color: var(--gold); 
             text-align: center; 
@@ -122,7 +135,6 @@
             box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
         }
 
-        /* Inputs and Dropdown */
         input, select {
             width: 100%; border: 1px solid #333; background: var(--bg-dark); padding: 12px;
             border-radius: 12px; color: #fff; margin-bottom: 15px; box-sizing: border-box; 
@@ -131,14 +143,12 @@
             outline: none;
         }
 
-        /* INPUT FOCUS LIGHT EFFECT */
         input:focus, select:focus {
             border-color: var(--gold);
             box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
-            background: #0d0d0d !important; /* Force dark background */
+            background: #0d0d0d !important;
         }
 
-        /* FIXING DROPDOWN OPTIONS */
         select option {
             background-color: #0d0d0d;
             color: #fff;
@@ -186,6 +196,9 @@
 <body>
 
 <div class="app-card">
+    <!-- Branding Logo in UI -->
+    <img src="logo.png" alt="" class="brand-logo" onerror="this.style.display='none'">
+    
     <h1>MIST GRADE METRIC</h1>
 
     <div class="selector-track">
@@ -194,6 +207,7 @@
         <button id="tab-cgpa" onclick="switchTab('cgpa')">CGPA Calc</button>
     </div>
 
+    <!-- Estimator Section -->
     <div id="mark-section">
         <div class="selector-track">
             <div id="creditGlider" class="rolling-glider" style="transform: translateX(100%);"></div>
@@ -231,6 +245,7 @@
         <button class="calc-btn" onclick="calculateMark()">Calculate Requirement</button>
     </div>
 
+    <!-- CGPA Section -->
     <div id="cgpa-section" style="display: none;">
         <div class="input-group">
             <label>ENTER SUBJECT DETAILS</label>
@@ -284,9 +299,12 @@
 
     function calculateMark() {
         const cts = [parseFloat(document.getElementById('ct1').value), parseFloat(document.getElementById('ct2').value), parseFloat(document.getElementById('ct3').value)];
-        for(let v of cts) if (v > 20) return showResult("Error: CT marks exceeded 20!", true);
+        
+        // Validation for negative values or exceeding max
+        for(let v of cts) if (v < 0 || v > 20) return showResult("Error: Invalid CT marks!", true);
+        
         let ctArray = cts.filter(n => !isNaN(n)).sort((a,b) => b-a);
-        if (ctArray.length < 2) return alert("Enter 2 CT marks.");
+        if (ctArray.length < 2) return alert("Enter at least 2 CT marks.");
         
         const mid = parseFloat(document.getElementById('midterm').value) || 0;
         const att = parseFloat(document.getElementById('attendance').value) || 0;
@@ -295,7 +313,10 @@
 
         const maxM = selectedCredit === 2 ? 20 : 30;
         const maxO = selectedCredit === 2 ? 10 : 15;
-        if (mid > maxM || att > maxO || perf > maxO) return showResult(`Error: Input exceeds limits!`, true);
+
+        if (mid < 0 || mid > maxM || att < 0 || att > maxO || perf < 0 || perf > maxO) {
+            return showResult(`Error: Input exceeds limits!`, true);
+        }
 
         let cur = ((ctArray[0]+ctArray[1])/2) + (mid/maxM*10) + (att/maxO*5) + (perf/maxO*5);
         let maxF = selectedCredit === 2 ? 120 : 180;
@@ -313,7 +334,7 @@
             let c = parseFloat(credits[i].value), g = parseFloat(gps[i].value);
             if (!isNaN(c) && !isNaN(g)) {
                 if (![0.75, 1.5, 2.0, 3.0].includes(c)) return showResult(`Error: Invalid Credit.`, true);
-                if (g < 0 || g > 4.0) return showResult(`Error: Input between 0-4 GPA.`, true);
+                if (g < 0 || g > 4.0) return showResult(`Error: Max GPA is 4.0.`, true);
                 totalP += (c * g); totalC += c;
             }
         }

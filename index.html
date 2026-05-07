@@ -5,41 +5,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MIST GradeMetric</title>
     
-    <!-- FAVICON -->
     <link rel="icon" type="image/png" href="favicon.png">
 
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --gold: #D4AF37;
-            --bg-dark: #0a0a0a;
+            --bg-page: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+            --bg-card: #0a0a0a;
+            --bg-inner: #0d0d0d;
+            --bg-input: #0a0a0a;
+            --text-main: white;
+            --text-muted: #777;
+            --border-color: #333;
             --rolling-speed: 0.8s cubic-bezier(0.65, 0, 0.35, 1);
         }
 
+        .light-mode {
+            --bg-page: #f0f2f5;
+            --bg-card: #ffffff;
+            --bg-inner: #ffffff;
+            --bg-input: #f8f9fa;
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            --border-color: #dcdde1;
+            --gold: #0984E3; 
+        }
+
         body {
-            background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+            background: var(--bg-page);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             font-family: 'Open Sans', sans-serif;
             margin: 0;
-            color: white;
+            color: var(--text-main);
             padding: 20px;
+            transition: all 0.3s ease;
         }
 
         .app-card {
-            background: #0a0a0a;
+            background: var(--bg-card);
             padding: 30px;
             border-radius: 25px;
             width: 100%;
             max-width: 400px;
             position: relative;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            box-shadow: 0 15px 45px rgba(0,0,0,0.2);
             overflow: hidden;
             display: flex;
             flex-direction: column;
             z-index: 1;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--gold);
+            padding: 0;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            z-index: 10;
+            transition: all 0.3s ease;
         }
 
         .app-card::before {
@@ -58,7 +95,7 @@
             content: '';
             position: absolute;
             inset: 2px;
-            background: #0d0d0d;
+            background: var(--bg-inner);
             border-radius: 23px;
             z-index: -1;
         }
@@ -71,21 +108,22 @@
         h1 { 
             color: var(--gold); 
             text-align: center; 
-            font-size: 24px; 
+            font-size: 28px; 
             font-weight: 800; 
             text-transform: uppercase; 
             margin-bottom: 25px; 
-            letter-spacing: 1px;
+            margin-top: 10px;
+            letter-spacing: 1.5px;
         }
 
         .selector-track {
             position: relative;
             display: flex;
-            background: #111;
+            background: var(--bg-input);
             border-radius: 50px;
             padding: 5px;
             margin-bottom: 20px;
-            border: 1px solid #333;
+            border: 1px solid var(--border-color);
             height: 48px;
             align-items: center;
             isolation: isolate; 
@@ -96,7 +134,7 @@
             height: 100%;
             border: none;
             background: none;
-            color: #777;
+            color: var(--text-muted);
             font-weight: 700;
             cursor: pointer;
             z-index: 3;
@@ -105,7 +143,9 @@
             font-size: 13px;
         }
 
+        /* Set text to black for active buttons/gliders on Gold backgrounds */
         .selector-track button.active { color: #000; }
+        .light-mode .selector-track button.active { color: #fff; }
 
         .rolling-glider {
             position: absolute;
@@ -116,22 +156,16 @@
             z-index: 1;
             left: 5px;
             transition: transform var(--rolling-speed);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
         }
 
         input, select {
-            width: 100%; border: 1px solid #333; background: var(--bg-dark); padding: 12px;
-            border-radius: 12px; color: #fff; margin-bottom: 15px; box-sizing: border-box; 
+            width: 100%; border: 1px solid var(--border-color); background: var(--bg-input); padding: 12px;
+            border-radius: 12px; color: var(--text-main); margin-bottom: 15px; box-sizing: border-box; 
             font-size: 14px; font-family: 'Open Sans', sans-serif;
-            transition: all 0.3s ease;
             outline: none;
         }
 
-        input:focus, select:focus {
-            border-color: var(--gold);
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
-            background: #0d0d0d !important;
-        }
+        input:focus, select:focus { border-color: var(--gold); }
 
         .input-group label { display: block; font-size: 11px; color: var(--gold); font-weight: 700; margin-bottom: 6px; text-transform: uppercase; }
         
@@ -144,11 +178,14 @@
         .calc-btn {
             width: 100%; background: var(--gold); color: #000; border: none; padding: 15px;
             border-radius: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase; 
-            margin-top: 10px; font-family: 'Open Sans', sans-serif;
+            margin-top: 10px;
         }
+        
+        /* White text for the Blue button in light mode */
+        .light-mode .calc-btn { color: #fff; }
 
         .reset-btn {
-            width: 100%; background: transparent; color: #888; border: 1px solid #333;
+            width: 100%; background: transparent; color: var(--text-muted); border: 1px solid var(--border-color);
             padding: 8px; margin-top: 10px; border-radius: 12px; cursor: pointer; font-size: 11px;
         }
 
@@ -158,6 +195,8 @@
         }
 
         #displayResult { color: var(--gold); font-weight: 700; font-size: 15px; }
+        /* Ensuring result numbers are black when background is fully gold (if applicable) */
+        .result-box.highlight { color: #000; }
 
         .footer-credit { 
             margin-top: 25px; 
@@ -166,7 +205,6 @@
             color: var(--gold); 
             font-weight: 700;
             text-transform: uppercase; 
-            letter-spacing: 1px;
             opacity: 0.9;
         }
     </style>
@@ -174,6 +212,7 @@
 <body>
 
 <div class="app-card">
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
     <h1>MIST GRADE METRIC</h1>
 
     <div class="selector-track">
@@ -245,6 +284,13 @@
 <script>
     let selectedCredit = 3;
 
+    function toggleTheme() {
+        const body = document.body;
+        const btn = document.getElementById('themeBtn');
+        body.classList.toggle('light-mode');
+        btn.innerHTML = body.classList.contains('light-mode') ? '☀️' : '🌙';
+    }
+
     function switchTab(tab) {
         const glider = document.getElementById('tabGlider');
         const isMark = (tab === 'mark');
@@ -281,14 +327,12 @@
         const target = parseFloat(document.getElementById('targetGPA').value);
         const maxM = selectedCredit === 2 ? 20 : 30;
         const maxO = selectedCredit === 2 ? 10 : 15;
-        if (mid < 0 || mid > maxM || att < 0 || att > maxO || perf < 0 || perf > maxO) {
-            return showResult(`Error: Input exceeds limits!`, true);
-        }
+        if (mid < 0 || mid > maxM || att < 0 || att > maxO || perf < 0 || perf > maxO) return showResult(`Error: Input exceeds limits!`, true);
+        
         let cur = ((ctArray[0]+ctArray[1])/2) + (mid/maxM*10) + (att/maxO*5) + (perf/maxO*5);
         let maxF = selectedCredit === 2 ? 120 : 180;
         let final = ((target - cur) / 60) * maxF;
-        if (final > maxF) showResult("Target Unreachable!", true);
-        else showResult(`NEED: ${Math.max(0, final).toFixed(2)} / ${maxF}`);
+        showResult(final > maxF ? "Target Unreachable!" : `NEED: ${Math.max(0, final).toFixed(2)} / ${maxF}`, final > maxF);
     }
 
     function calculateCGPA() {
